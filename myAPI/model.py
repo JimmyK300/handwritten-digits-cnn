@@ -233,6 +233,7 @@ class CNN(nn.Module):
 
         all_preds = []
         all_targets = []
+
         wrong_indices = []
         wrong_details = [] if return_wrong_details else None
 
@@ -245,6 +246,7 @@ class CNN(nn.Module):
                 y = torch.tensor([y], device=device)
 
                 pred = self(X)
+
                 loss = criterion(pred, y)
                 running_loss += loss.item()
 
