@@ -20,8 +20,8 @@ class MNISTDataset(Dataset):
             img_file = Path(path) / "train-images-idx3-ubyte"
             lbl_file = Path(path) / "train-labels-idx1-ubyte"
         else:
-            img_file = Path(path) / "test-images-idx3-ubyte"
-            lbl_file = Path(path) / "test-labels-idx1-ubyte"
+            img_file = Path(path) / "t10k-images-idx3-ubyte"
+            lbl_file = Path(path) / "t10k-labels-idx1-ubyte"
             
         # Use your custom function to read the raw bytes
         self.images = mnist_pt(img_file)

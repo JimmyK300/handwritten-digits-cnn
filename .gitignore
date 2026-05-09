@@ -55,7 +55,4 @@ venv.bak/
 
 testingLocal.ipynb
 newWeigh.pth
-mydata\test-images-idx3-ubyte
-mydata\test-labels-idx1-ubyte
-mydata\train-labels-idx1-ubyte
-mydata\train-images-idx3-ubyte
+testRead.ipynb
