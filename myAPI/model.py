@@ -170,7 +170,7 @@ class CNN(nn.Module):
     def testing_process(self, data, batch_size=64):
         criterion = nn.CrossEntropyLoss()
         loader = DataLoader(data, batch_size=batch_size, shuffle=False)
-        datasize = data.__len__()
+        datasize = len(data)
 
         self.eval()
 
@@ -191,3 +191,17 @@ class CNN(nn.Module):
         accuracy = correct / datasize
 
         return avg_loss, accuracy
+    
+    def save_weight(self, path):
+        torch.save(self.state_dict(), path)
+
+    def load_weight(self, path, map_location=device):
+        self.load_state_dict(torch.load(path, map_location=map_location))
+        self.to(map_location)
+
+    def clear_weight(self):
+        def reset(m):
+            if hasattr(m, "reset_parameters"):
+                m.reset_parameters()
+
+        self.apply(reset)
