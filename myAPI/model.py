@@ -223,62 +223,61 @@ class CNN(nn.Module):
 
         return loss_history, accuracy_history
 
-    def testing_process(self, data, batch_size=64, return_wrong_details: bool = False):
+    def testing_process(self, data, return_wrong_details: bool = False):
         criterion = nn.CrossEntropyLoss()
-        loader = DataLoader(data, batch_size=batch_size, shuffle=False)
-        datasize = len(data)
 
         self.eval()
 
         running_loss = 0
         correct = 0
+        datasize = len(data)
 
         all_preds = []
         all_targets = []
+
         wrong_indices = []
         wrong_details = [] if return_wrong_details else None
 
-        global_index = 0  # tracks original dataset index
-
         with torch.no_grad():
-            for X, y in loader:
-                X, y = X.to(device), y.to(device)
+            for idx in range(datasize):
+                X, y = data[idx]
+
+                # add batch dimension
+                X = X.unsqueeze(0).to(device)
+                y = torch.tensor([y], device=device)
 
                 pred = self(X)
+
                 loss = criterion(pred, y)
+                running_loss += loss.item()
 
-                running_loss += loss.item() * X.size(0)
+                predicted = pred.argmax(1)
 
-                preds = pred.argmax(1)
+                if predicted.item() == y.item():
+                    correct += 1
+                else:
+                    wrong_indices.append(idx)
 
-                correct += (preds == y).sum().item()
+                    if wrong_details is not None:
+                        wrong_details.append({
+                            "index": idx,
+                            "target": int(y.item()),
+                            "pred": int(predicted.item()),
+                        })
 
-                # store for confusion matrix
-                all_preds.append(preds.cpu())
+                all_preds.append(predicted.cpu())
                 all_targets.append(y.cpu())
-
-                # track wrong indices (+ optional per-sample details)
-                for i in range(len(y)):
-                    if preds[i] != y[i]:
-                        idx = global_index + i
-                        wrong_indices.append(idx)
-                        if wrong_details is not None:
-                            wrong_details.append(
-                                {
-                                    "index": int(idx),
-                                    "target": int(y[i].item()),
-                                    "pred": int(preds[i].item()),
-                                }
-                            )
-
-                global_index += len(y)
 
         all_preds = torch.cat(all_preds)
         all_targets = torch.cat(all_targets)
 
         # confusion matrix
         num_classes = int(all_targets.max().item()) + 1
-        confusion_matrix = torch.zeros(num_classes, num_classes, dtype=torch.int64)
+        confusion_matrix = torch.zeros(
+            num_classes,
+            num_classes,
+            dtype=torch.int64
+        )
 
         for t, p in zip(all_targets, all_preds):
             confusion_matrix[t, p] += 1
