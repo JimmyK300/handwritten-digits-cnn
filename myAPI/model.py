@@ -2,30 +2,39 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
+# from torchvision.datasets import MNIST
+from torchvision import transforms
 
+from myAPI.mnist_to_pt import mnist_pt
+
+from pathlib import Path
 from tqdm import trange
 
-import time
-
 import numpy as np
-
-from mnist import MNIST
 
 device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
 
 class MNISTDataset(Dataset):
     def __init__(self, path, train=True, transform = None, target_transform = None):
-        mndata = MNIST(path)
-
         if train:
-            images, labels = mndata.load_training()
+            img_file = Path(path) / "train-images-idx3-ubyte"
+            lbl_file = Path(path) / "train-labels-idx1-ubyte"
         else:
-            images, labels = mndata.load_testing()
-
-        self.images = torch.tensor(images, dtype=torch.float32).reshape(-1, 1, 28, 28)/255.
-        self.labels = torch.tensor(labels, dtype=torch.long)
-        self.transform = transform                  # transform modify the image
-        self.target_transform = target_transform    # target_transform modify the label
+            img_file = Path(path) / "t10k-images-idx3-ubyte"
+            lbl_file = Path(path) / "t10k-labels-idx1-ubyte"
+            
+        # Use your custom function to read the raw bytes
+        self.images = mnist_pt(img_file)
+        self.labels = mnist_pt(lbl_file)
+        
+        # Normalize to [0, 1] and add the channel dimension (N, 1, 28, 28)
+        self.images = self.images.to(torch.float32) / 255.0
+        self.images = self.images.unsqueeze(1)
+        
+        # Ensure labels are standard long integers for loss functions (like CrossEntropy)
+        self.labels = self.labels.to(torch.long)
+        self.transform = transform
+        self.target_transform = target_transform
     
     def __len__(self):
         return len(self.labels)
@@ -33,13 +42,10 @@ class MNISTDataset(Dataset):
     def __getitem__(self, idx):
         image = self.images[idx]
         label = self.labels[idx]
-
         if self.transform:
             image = self.transform(image)
-
         if self.target_transform:
             label = self.target_transform(label)
-
         return image, label
 
 class MyData(Dataset):

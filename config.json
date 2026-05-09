@@ -1,0 +1,27 @@
+{
+    "model": {
+        "in_channels": 1,
+        "conv_channels": [
+            32,
+            32
+        ],
+        "kernel_sizes": [
+            5,
+            3
+        ],
+        "paddings": [
+            2,
+            1
+        ],
+        "hidden_dims": [
+            128,
+            32
+        ],
+        "num_classes": 10
+    },
+    "training": {
+        "batch_size": 64,
+        "learning_rate": 0.001,
+        "epochs": 5
+    }
+}
