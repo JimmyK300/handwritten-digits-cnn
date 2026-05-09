@@ -177,6 +177,12 @@ class CNN(nn.Module):
         running_loss = 0
         correct = 0
 
+        all_preds = []
+        all_targets = []
+        wrong_indices = []
+
+        global_index = 0  # tracks original dataset index
+
         with torch.no_grad():
             for X, y in loader:
                 X, y = X.to(device), y.to(device)
@@ -185,12 +191,36 @@ class CNN(nn.Module):
                 loss = criterion(pred, y)
 
                 running_loss += loss.item() * X.size(0)
-                correct += (pred.argmax(1) == y).sum().item()
+
+                preds = pred.argmax(1)
+
+                correct += (preds == y).sum().item()
+
+                # store for confusion matrix
+                all_preds.append(preds.cpu())
+                all_targets.append(y.cpu())
+
+                # track wrong indices
+                for i in range(len(y)):
+                    if preds[i] != y[i]:
+                        wrong_indices.append(global_index + i)
+
+                global_index += len(y)
+
+        all_preds = torch.cat(all_preds)
+        all_targets = torch.cat(all_targets)
+
+        # confusion matrix
+        num_classes = int(all_targets.max().item()) + 1
+        confusion_matrix = torch.zeros(num_classes, num_classes, dtype=torch.int64)
+
+        for t, p in zip(all_targets, all_preds):
+            confusion_matrix[t, p] += 1
 
         avg_loss = running_loss / datasize
         accuracy = correct / datasize
 
-        return avg_loss, accuracy
+        return avg_loss, accuracy, confusion_matrix, wrong_indices
     
     def save_weight(self, path):
         torch.save(self.state_dict(), path)
