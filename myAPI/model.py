@@ -225,7 +225,6 @@ class CNN(nn.Module):
 
     def testing_process(self, data, return_wrong_details: bool = False):
         criterion = nn.CrossEntropyLoss()
-
         self.eval()
 
         running_loss = 0
@@ -258,7 +257,7 @@ class CNN(nn.Module):
                 else:
                     wrong_indices.append(idx)
 
-                    if wrong_details is not None:
+                    if return_wrong_details:
                         wrong_details.append({
                             "index": idx,
                             "target": int(y.item()),
