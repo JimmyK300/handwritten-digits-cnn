@@ -1,4 +1,5 @@
 import torch
+# from myAPI.model import MNISTDataset
 
 def mnist_pt(path):
     with open(path, "rb") as f:
@@ -17,3 +18,22 @@ def mnist_pt(path):
         output = torch.frombuffer(img_data, dtype=torch.uint8)
         
         return output.reshape(*dims)
+    
+def pt_mnist(data ,path):
+    data = data.to(torch.uint8)
+
+    dims = data.shape
+    magic_num = 8*2**8 + len(dims)
+
+    flat = torch.flatten(data)
+    
+    magic_num_b = magic_num.to_bytes(4, "big")
+    dims_b = b''.join(dim.to_bytes(4, "big") for dim in dims)
+    data_b = bytes(flat.tolist())
+
+    out = magic_num_b + dims_b + data_b
+
+    with open(path, "wb") as f:
+        f.write(out)
+
+        
