@@ -1,0 +1,92 @@
+{
+  "description": "Tiny smoke test for CI: one seed, one epoch, 60 samples per writer.",
+  "results_dir": "results_smoke",
+  "workers": 1,
+  "threads_per_worker": 2,
+  "seeds": [
+    0
+  ],
+  "protocols": [
+    "sample_split",
+    "lowo",
+    "mnist_to_stylus"
+  ],
+  "baseline_condition": "baseline",
+  "primary_condition": "dilate_k3_i1",
+  "model": {
+    "in_channels": 1,
+    "conv_channels": [
+      32,
+      32
+    ],
+    "kernel_sizes": [
+      5,
+      3
+    ],
+    "paddings": [
+      2,
+      1
+    ],
+    "hidden_dims": [
+      128,
+      32
+    ],
+    "num_classes": 10
+  },
+  "training": {
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "epochs": 1
+  },
+  "conditions": {
+    "baseline": {
+      "preprocess": {}
+    },
+    "dilate_k3_i1": {
+      "preprocess": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      }
+    },
+    "gain_1.5": {
+      "preprocess": {
+        "gain": 1.5
+      }
+    },
+    "aug_stroke_width": {
+      "preprocess": {},
+      "augment": "stroke_width"
+    }
+  },
+  "numpy_cnn": {
+    "enabled": true,
+    "seeds": [
+      0
+    ],
+    "protocols": [
+      "lowo",
+      "mnist_to_stylus"
+    ],
+    "conditions": [
+      "baseline",
+      "dilate_k3_i1"
+    ],
+    "epochs": 1,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "mnist_train_subset": 200,
+    "model": {
+      "conv_channels": [
+        8,
+        16
+      ],
+      "kernel_sizes": [
+        5,
+        3
+      ],
+      "hidden_dim": 64
+    }
+  },
+  "max_per_writer": 60,
+  "mnist_train_subset": 300
+}

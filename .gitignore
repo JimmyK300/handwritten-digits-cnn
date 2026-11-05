@@ -57,3 +57,6 @@ venv.bak/
 testingLocal.ipynb
 newWeigh.pth
 testRead.ipynb
+# study outputs that are regenerated
+results_smoke/
+study.log
