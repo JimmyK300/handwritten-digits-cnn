@@ -7,6 +7,9 @@ sample_split     The team's original split: each writer's own train/t10k files,
 lowo             Leave-one-writer-out: train on 4 writers, test on the 5th.
                  Repeated for all 5 writers.
 mnist_to_stylus  Train on MNIST, test on all stylus samples (cross-domain).
+custom_to_mnist  Train on all stylus samples, test on the MNIST test set
+                 (the team's "regime 4"). Preprocessing is applied to the
+                 stylus training images only; MNIST test images are untouched.
 
 Conditions
 ----------
@@ -98,6 +101,17 @@ def _mnist(cfg) -> tuple[np.ndarray, np.ndarray]:
     return _CACHE["mnist"]
 
 
+def _mnist_test(cfg) -> tuple[np.ndarray, np.ndarray]:
+    if "mnist_test" not in _CACHE:
+        x, y = D.load_mnist("t10k")
+        n = cfg.get("mnist_test_subset")
+        if n:
+            idx = np.random.default_rng(4322).permutation(len(y))[:n]
+            x, y = x[idx], y[idx]
+        _CACHE["mnist_test"] = (x, y)
+    return _CACHE["mnist_test"]
+
+
 def _split(cfg, protocol: str, fold: str):
     """Return (x_train, y_train, test_parts) where test_parts = [(writer, x, y)]."""
     writers = _stylus(cfg)
@@ -117,6 +131,10 @@ def _split(cfg, protocol: str, fold: str):
     if protocol == "mnist_to_stylus":
         x, y = _mnist(cfg)
         return x, y, [(n, w.images, w.labels) for n, w in writers.items()]
+    if protocol == "custom_to_mnist":
+        x, y = D.concat(list(writers.values()))
+        xt, yt = _mnist_test(cfg)
+        return x, y, [("mnist_test", xt, yt)]
     raise ValueError(protocol)
 
 
@@ -127,6 +145,9 @@ def build_jobs(cfg) -> list[Job]:
     conds = cfg["conditions"]
     writers = D.list_writers()
     jobs: list[Job] = []
+
+    default_conds = [c for c in conds if not conds[c].get("protocols")]
+    proto_conds = cfg.get("protocol_conditions", {})
 
     def add(protocol, model, seeds, cond_names):
         for seed in seeds:
@@ -145,11 +166,12 @@ def build_jobs(cfg) -> list[Job]:
                         jobs.append(Job(protocol, model, fold, seed, c, [c]))
 
     for protocol in cfg["protocols"]:
-        add(protocol, "torch", cfg["seeds"], list(conds))
+        add(protocol, "torch", cfg["seeds"], proto_conds.get(protocol, default_conds))
     np_cfg = cfg.get("numpy_cnn", {})
     if np_cfg.get("enabled"):
+        np_proto = np_cfg.get("protocol_conditions", {})
         for protocol in np_cfg["protocols"]:
-            add(protocol, "numpy", np_cfg["seeds"], np_cfg["conditions"])
+            add(protocol, "numpy", np_cfg["seeds"], np_proto.get(protocol, np_cfg["conditions"]))
 
     for job in jobs:
         job.keys = [run_key(job.protocol, job.model, job.fold, job.seed, job.train_cond, e) for e in job.eval_conds]
@@ -197,7 +219,8 @@ def run_job(cfg, job: Job) -> list[dict[str, Any]]:
 
     records = []
     for eval_cond, key in zip(job.eval_conds, job.keys):
-        pre = conds[eval_cond].get("preprocess")
+        # custom_to_mnist: preprocessing is for the stylus training images only
+        pre = None if job.protocol == "custom_to_mnist" else conds[eval_cond].get("preprocess")
         y_all, p_all, per_writer = [], [], {}
         for name, x_te, y_te in parts:
             pred = predict(apply_preprocess(x_te, pre))

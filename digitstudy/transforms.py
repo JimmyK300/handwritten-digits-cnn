@@ -48,10 +48,60 @@ def brightness(images: np.ndarray, gain: float = 1.0) -> np.ndarray:
     return np.clip(images * gain, 0.0, 1.0).astype(images.dtype, copy=False)
 
 
+def _com_shift(img: np.ndarray) -> np.ndarray:
+    """Shift by whole pixels so the intensity center of mass lands at the image center."""
+    h, w = img.shape
+    total = img.sum()
+    if total <= 0:
+        return img
+    yy, xx = np.mgrid[:h, :w]
+    dy = int(round((h - 1) / 2 - (yy * img).sum() / total))
+    dx = int(round((w - 1) / 2 - (xx * img).sum() / total))
+    out = np.zeros_like(img)
+    ys, yd = (slice(0, h - dy), slice(dy, h)) if dy >= 0 else (slice(-dy, h), slice(0, h + dy))
+    xs, xd = (slice(0, w - dx), slice(dx, w)) if dx >= 0 else (slice(-dx, w), slice(0, w + dx))
+    out[yd, xd] = img[ys, xs]
+    return out
+
+
+def mnist_normalize(images: np.ndarray, box: int = 20, threshold: float = 0.05, rescale: bool = True) -> np.ndarray:
+    """MNIST-style size and position normalization.
+
+    Like the original MNIST pipeline: crop to the ink bounding box, scale (keeping
+    aspect ratio, bilinear) so the longer side is `box` pixels, paste into a
+    28x28 frame and shift so the center of mass is at the center.
+    With rescale=False only the center-of-mass shift is applied.
+    """
+    from scipy.ndimage import zoom
+
+    squeeze = images.ndim == 2
+    x = images[None] if squeeze else images
+    out = np.zeros_like(x)
+    size = x.shape[-1]
+    for i, img in enumerate(x):
+        if not rescale:
+            out[i] = _com_shift(img)
+            continue
+        rows = np.where(img.max(axis=1) > threshold)[0]
+        cols = np.where(img.max(axis=0) > threshold)[0]
+        if rows.size == 0:
+            out[i] = img
+            continue
+        crop = img[rows[0] : rows[-1] + 1, cols[0] : cols[-1] + 1]
+        scale = box / max(crop.shape)
+        scaled = np.clip(zoom(crop, scale, order=1), 0.0, 1.0)[:box, :box]
+        frame = np.zeros((size, size), dtype=img.dtype)
+        top, left = (size - scaled.shape[0]) // 2, (size - scaled.shape[1]) // 2
+        frame[top : top + scaled.shape[0], left : left + scaled.shape[1]] = scaled
+        out[i] = _com_shift(frame)
+    return out[0] if squeeze else out
+
+
 def apply_preprocess(images: np.ndarray, spec: dict[str, Any] | None) -> np.ndarray:
     """Apply a deterministic preprocessing spec.
 
-    spec keys (all optional):
+    spec keys (all optional, applied in this order):
+      normalize: "mnist" | "center"     -> size/position normalization (first)
       dilate_kernel, dilate_iterations  -> grayscale dilation
       erode_kernel, erode_iterations    -> grayscale erosion
       gain                              -> brightness gain (applied last)
@@ -59,6 +109,8 @@ def apply_preprocess(images: np.ndarray, spec: dict[str, Any] | None) -> np.ndar
     if not spec:
         return images
     out = images
+    if spec.get("normalize"):  # "mnist" (rescale + center) or "center" (center only)
+        out = mnist_normalize(out, rescale=spec["normalize"] == "mnist")
     if spec.get("dilate_kernel", 1) > 1 and spec.get("dilate_iterations", 0) > 0:
         out = dilate(out, int(spec["dilate_kernel"]), int(spec["dilate_iterations"]))
     if spec.get("erode_kernel", 1) > 1 and spec.get("erode_iterations", 0) > 0:

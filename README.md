@@ -1,10 +1,21 @@
 # Handwritten digits: CNNs on a team-collected stylus dataset
 
-This repo asks whether **morphological dilation** helps a CNN read stylus-written digits from people it has never seen. It answers with a controlled study. Along the way it shows that the bigger problem is generalizing to new writers.
+This repo studies how well a CNN trained on stylus-written digits generalizes to new writers and to MNIST. It does so with controlled, multi-seed experiments on a 10,000-digit dataset that the team collected from 5 writers. **The full write-up is [`REPORT.md`](REPORT.md)**, organized by research question.
 
 It extends the team project [`ProfK602170/CustomDataCNN`](https://github.com/ProfK602170/CustomDataCNN) (full commit history kept). It reuses the config-driven CNN and run-tracking structure from [`JimmyK300/autoresearch-cnn-rocm`](https://github.com/JimmyK300/autoresearch-cnn-rocm).
 
-## Key results
+## Headline findings
+
+All numbers are PyTorch CNN accuracy, mean ± std over 5 seeds, on held-out data.
+
+1. **Writer diversity drives cross-writer generalization** (regimes R1–R5, 1,205 runs). Going from 1 to 4 training writers raises unseen-writer accuracy from 67.8 ± 2.2% to 85.7 ± 1.4%, and lowers WriterBias (max − min accuracy across writers) from 37.6 to 14.8 pp. With the total training size fixed at one writer's worth, 4 writers still beat 1 by +12.3 ± 2.0 pp (p < 0.001).
+2. **MNIST pre-training plus fine-tuning is best.** It reaches 94.4 ± 0.4% on unseen writers and loses only 0.3 pp on MNIST, so there is no catastrophic forgetting.
+3. **Stylus → MNIST: dilation helps a lot in this direction.** Training on stylus digits gives 47.4% on MNIST. One 3×3 dilation pass on the training images (pre-registered) adds **+12.6 ± 8.0 pp** (+30% relative, p = 0.02). MNIST-style normalization plus dilation adds **+22.1 ± 5.2 pp**. Dilation also removes the class-8 over-prediction (8 goes from 35% of predictions to 5%).
+4. **Within stylus data, dilation barely matters** (under 1 pp for unseen writers, as below).
+
+![Writer diversity](results/regimes/figures/regimes_diversity.png)
+
+## Dilation study
 
 The table shows PyTorch CNN accuracy, mean ± std over 5 seeds. Δ is the paired change against the baseline in **percentage points (pp)**. The 3×3 dilation (`dilate_k3_i1`) was chosen as the headline condition before any run.
 
@@ -21,9 +32,22 @@ What this shows:
 1. **New writers are the real gap.** The same model loses **7.5 pp** (96.1% → 88.6%) when the test writer is held out of training. The team's original split mixed every writer's samples into both train and test, which hid this.
 2. **Light dilation helps a little, at most.** One 3×3 pass gains under 1 pp for the PyTorch CNN on unseen writers, and 1.3 pp for the NumPy CNN. Four of five seeds improve, but neither result is significant at p < 0.05.
 3. **Heavy dilation hurts.** Two 3×3 passes (equal to one 5×5 pass) lose 2.1 pp on unseen writers and 17.7 pp (−21% relative) in the MNIST → stylus test. Erosion is far worse: thin strokes vanish.
-4. **No 20% improvement appears anywhere in this study.** An earlier informal note recalled a ~20% gain from dilation. No setting here reproduces it, in percentage points or relative terms.
+4. **The large dilation effect is in the other direction.** An earlier informal note recalled a ~20% gain from dilation. None of the three protocols above shows it. It appears only when training on stylus digits and testing on MNIST: +12.6 pp absolute (+29.6% relative) from dilation alone, and +22.1 pp with normalization (see below).
 
-Full tables for all 12 conditions, both models and every protocol are in [`results/RESULTS.md`](results/RESULTS.md). Raw per-run records, including confusion matrices, are in [`results/runs.jsonl`](results/runs.jsonl).
+### Stylus → MNIST (the team's Regime 4)
+
+Train on all 10,000 stylus digits, test on the 10,000 MNIST test images, and preprocess the training images only.
+
+| Condition (5 seeds) | PyTorch | NumPy |
+|---|---|---|
+| Baseline | 47.35 ± 7.98 | 50.85 ± 5.81 |
+| 3×3 dilation, 1 pass (pre-registered) | 59.94 ± 3.02 (+12.59 pp, p = 0.024) | 57.37 ± 2.92 (+6.52 pp, p = 0.040) |
+| MNIST normalization (size + centre) | 67.22 ± 2.96 (+19.87 pp, p = 0.001) | 63.05 ± 2.80 (+12.20 pp) |
+| Normalization + 3×3 dilation | 69.46 ± 3.19 (+22.11 pp, p = 0.001) | 63.46 ± 3.59 (+12.61 pp) |
+
+![Stylus to MNIST](results/figures/deltas_custom_to_mnist.png)
+
+Full tables for all conditions, both models and every protocol are in [`results/RESULTS.md`](results/RESULTS.md). Raw per-run records, including confusion matrices, are in [`results/runs.jsonl`](results/runs.jsonl).
 
 ![Effect of each condition](results/figures/deltas_torch.png)
 
@@ -49,6 +73,11 @@ The team collected **10,000 stylus-written digits from 5 writers**: Gia Huy, Le 
 - `sample_split`: the team's original split, with every writer in both train and test.
 - `lowo`: leave-one-writer-out. Train on 4 writers, test on the 5th, for all 5 writers. The score is the macro average over held-out writers.
 - `mnist_to_stylus`: train on MNIST (60k), test on all 10k stylus digits. Preprocessing is applied to the test images only.
+- `custom_to_mnist`: train on all 10k stylus digits, test on the MNIST test set (10k). Preprocessing is applied to the training images only. It adds MNIST-style normalization arms: crop, scale to 20 px, centre by center of mass.
+
+**Regimes** (`digitstudy/regimes.py`, `configs/regimes.json`; see [`REPORT.md`](REPORT.md#1-data-and-method))
+- R1: MNIST only. R2: one writer. R3: 2–4 writers, plus a size-matched variant. R4: all 5 writers, plus a 10/25/50% size sweep. R5: R1 fine-tuned on 1 or 3 writers.
+- Each runs on the team's train/held-out split, with 5 seeds and up to 4 preprocessing arms.
 
 **Conditions** (`configs/study.json`)
 - Applied to train and test images, except in `mnist_to_stylus`:
@@ -67,25 +96,28 @@ The team collected **10,000 stylus-written digits from 5 writers**: Gia Huy, Le 
 python -m venv .venv && . .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
-python -m digitstudy reproduce                     # 450 jobs / 510 runs, ~35 min on a 20-thread CPU
+python -m digitstudy reproduce                     # dilation study (~45 min) + regimes (~90 min) on a 20-thread CPU
 ```
 
-`reproduce` runs the study and then writes `results/RESULTS.md`, `results/summary.json` and `results/figures/`. Runs are appended to `results/runs.jsonl` and skipped if already present, so an interrupted run resumes. To start over, delete `results/runs.jsonl`. Other commands:
+`reproduce` runs both studies. It writes `results/RESULTS.md`, `results/summary.json` and `results/figures/` for the dilation study, and `results/regimes/REGIMES.md`, `summary.json` and `figures/` for the regimes. Runs are appended to `runs.jsonl` and skipped if already present, so an interrupted run resumes. To start over, delete the `runs.jsonl` files. Other commands:
 
 ```bash
 python -m digitstudy smoke        # ~10 s end-to-end check (what CI runs)
-python -m digitstudy report       # rebuild tables/figures from existing runs
+python -m digitstudy report            # rebuild dilation-study tables/figures from existing runs
+python -m digitstudy regimes           # regimes R1-R5 only
+python -m digitstudy regimes-report    # rebuild regime tables/figures
 pytest -q                         # unit tests, gradient checks, pipeline test
 ```
 
-Edit `configs/study.json` to change seeds, conditions, protocols or worker count.
+Edit `configs/study.json` or `configs/regimes.json` to change seeds, conditions, regimes or worker count.
 
 ## Repository layout
 
 | Path | Origin |
 |---|---|
 | `myAPI/`, `main.ipynb`, `mnist/`, `mydata/`, `sampleModel/`, `mini_mnist_data/`, `tests/test_mydata_split.py`, `tests/test_results_export.py` | Original team project (ProfK602170, kinus-is-coding, JimmyK300) |
-| `digitstudy/`, `configs/`, `results/`, `tests/test_numpy_cnn.py`, `tests/test_transforms.py`, `tests/test_study_pipeline.py`, `.github/workflows/ci.yml` | Added for this study |
+| `digitstudy/`, `configs/`, `results/`, `REPORT.md`, `tests/test_numpy_cnn.py`, `tests/test_transforms.py`, `tests/test_study_pipeline.py`, `tests/test_regimes.py`, `.github/workflows/ci.yml` | Added for this study |
+| `results/team_reference/` | The team's earlier Regime 4 numbers, copied from the project Drive for comparison |
 
 ## Limitations
 
@@ -93,7 +125,8 @@ Edit `configs/study.json` to change seeds, conditions, protocols or worker count
 - **All five writers are team members.** The test does not cover a broader population or other devices.
 - **One architecture and short training** (5 epochs, no tuning per condition). A larger model, or tuning per condition, could change the small effects.
 - **The effects are small and uncorrected for multiple comparisons.** The best sweep condition on unseen writers, 2×2 dilation with gain 1.5 (+0.92 pp, p = 0.03), was found after the fact. Treat it as a hypothesis.
-- **Other gaps are not tested.** In the MNIST → stylus test, digit size and centering probably matter more than stroke width: stylus digits are smaller and not centred by center of mass like MNIST. This study does not test that.
+- **Centering.** Stylus digits are about as tall as MNIST digits (about 20 px on average), but they are narrower and not centred by center of mass. Their center of mass varies by about 1.2 px across samples, against 0.3 px for MNIST. Centering alone adds +17.4 pp in the stylus → MNIST direction. Within stylus data, normalization adds about 2–3 pp for unseen writers (`results/regimes/REGIMES.md` §3).
+- More limitations (tablet stroke artifacts, one location, the 86/14 split, the fixed schedule) are listed in [`REPORT.md`](REPORT.md#6-limitations).
 - `dilate_k3_i2` and `dilate_k5_i1` give identical numbers by construction: two passes of a flat 3×3 square equal one 5×5 pass.
 
 ## Credits and license

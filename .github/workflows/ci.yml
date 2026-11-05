@@ -21,7 +21,7 @@ jobs:
           pip install numpy matplotlib scipy pytest
       - name: Unit tests (incl. NumPy CNN gradient checks)
         run: pytest -q
-      - name: Training smoke test (1 seed, 1 epoch, 60 samples/writer)
+      - name: Training smoke test (dilation study + regimes, 1 seed, 1 epoch)
         run: python -m digitstudy smoke
       - uses: actions/upload-artifact@v4
         with:

@@ -3,42 +3,222 @@
   "results_dir": "results",
   "workers": 4,
   "threads_per_worker": 4,
-  "seeds": [0, 1, 2, 3, 4],
-  "protocols": ["sample_split", "lowo", "mnist_to_stylus"],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "protocols": [
+    "sample_split",
+    "lowo",
+    "mnist_to_stylus",
+    "custom_to_mnist"
+  ],
   "baseline_condition": "baseline",
   "primary_condition": "dilate_k3_i1",
   "model": {
     "in_channels": 1,
-    "conv_channels": [32, 32],
-    "kernel_sizes": [5, 3],
-    "paddings": [2, 1],
-    "hidden_dims": [128, 32],
+    "conv_channels": [
+      32,
+      32
+    ],
+    "kernel_sizes": [
+      5,
+      3
+    ],
+    "paddings": [
+      2,
+      1
+    ],
+    "hidden_dims": [
+      128,
+      32
+    ],
     "num_classes": 10
   },
-  "training": {"batch_size": 64, "learning_rate": 0.001, "epochs": 5},
+  "training": {
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "epochs": 5
+  },
   "conditions": {
-    "baseline":       {"preprocess": {}},
-    "dilate_k2_i1":   {"preprocess": {"dilate_kernel": 2, "dilate_iterations": 1}},
-    "dilate_k2_i2":   {"preprocess": {"dilate_kernel": 2, "dilate_iterations": 2}},
-    "dilate_k3_i1":   {"preprocess": {"dilate_kernel": 3, "dilate_iterations": 1}},
-    "dilate_k3_i2":   {"preprocess": {"dilate_kernel": 3, "dilate_iterations": 2}},
-    "dilate_k5_i1":   {"preprocess": {"dilate_kernel": 5, "dilate_iterations": 1}},
-    "erode_k2_i1":    {"preprocess": {"erode_kernel": 2, "erode_iterations": 1}},
-    "gain_0.7":       {"preprocess": {"gain": 0.7}},
-    "gain_1.5":       {"preprocess": {"gain": 1.5}},
-    "gain_2.0":       {"preprocess": {"gain": 2.0}},
-    "dilate_k2_i1_gain_1.5": {"preprocess": {"dilate_kernel": 2, "dilate_iterations": 1, "gain": 1.5}},
-    "aug_stroke_width": {"preprocess": {}, "augment": "stroke_width"}
+    "baseline": {
+      "preprocess": {}
+    },
+    "dilate_k2_i1": {
+      "preprocess": {
+        "dilate_kernel": 2,
+        "dilate_iterations": 1
+      }
+    },
+    "dilate_k2_i2": {
+      "preprocess": {
+        "dilate_kernel": 2,
+        "dilate_iterations": 2
+      }
+    },
+    "dilate_k3_i1": {
+      "preprocess": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      }
+    },
+    "dilate_k3_i2": {
+      "preprocess": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 2
+      }
+    },
+    "dilate_k5_i1": {
+      "preprocess": {
+        "dilate_kernel": 5,
+        "dilate_iterations": 1
+      }
+    },
+    "erode_k2_i1": {
+      "preprocess": {
+        "erode_kernel": 2,
+        "erode_iterations": 1
+      }
+    },
+    "gain_0.7": {
+      "preprocess": {
+        "gain": 0.7
+      }
+    },
+    "gain_1.5": {
+      "preprocess": {
+        "gain": 1.5
+      }
+    },
+    "gain_2.0": {
+      "preprocess": {
+        "gain": 2.0
+      }
+    },
+    "dilate_k2_i1_gain_1.5": {
+      "preprocess": {
+        "dilate_kernel": 2,
+        "dilate_iterations": 1,
+        "gain": 1.5
+      }
+    },
+    "aug_stroke_width": {
+      "preprocess": {},
+      "augment": "stroke_width"
+    },
+    "norm_center": {
+      "preprocess": {
+        "normalize": "center"
+      },
+      "protocols": [
+        "custom_to_mnist"
+      ]
+    },
+    "norm_mnist": {
+      "preprocess": {
+        "normalize": "mnist"
+      },
+      "protocols": [
+        "custom_to_mnist"
+      ]
+    },
+    "norm_mnist_dilate_k2_i1": {
+      "preprocess": {
+        "normalize": "mnist",
+        "dilate_kernel": 2,
+        "dilate_iterations": 1
+      },
+      "protocols": [
+        "custom_to_mnist"
+      ]
+    },
+    "norm_mnist_dilate_k3_i1": {
+      "preprocess": {
+        "normalize": "mnist",
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "protocols": [
+        "custom_to_mnist"
+      ]
+    }
   },
   "numpy_cnn": {
     "enabled": true,
-    "seeds": [0, 1, 2, 3, 4],
-    "protocols": ["lowo", "mnist_to_stylus"],
-    "conditions": ["baseline", "dilate_k3_i1", "dilate_k2_i1"],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "protocols": [
+      "lowo",
+      "mnist_to_stylus",
+      "custom_to_mnist"
+    ],
+    "conditions": [
+      "baseline",
+      "dilate_k3_i1",
+      "dilate_k2_i1"
+    ],
     "epochs": 5,
     "batch_size": 64,
     "learning_rate": 0.001,
     "mnist_train_subset": 20000,
-    "model": {"conv_channels": [8, 16], "kernel_sizes": [5, 3], "hidden_dim": 64}
+    "model": {
+      "conv_channels": [
+        8,
+        16
+      ],
+      "kernel_sizes": [
+        5,
+        3
+      ],
+      "hidden_dim": 64
+    },
+    "protocol_conditions": {
+      "custom_to_mnist": [
+        "baseline",
+        "dilate_k3_i1",
+        "norm_mnist",
+        "norm_mnist_dilate_k3_i1"
+      ]
+    }
+  },
+  "protocol_conditions": {
+    "custom_to_mnist": [
+      "baseline",
+      "dilate_k2_i1",
+      "dilate_k2_i2",
+      "dilate_k3_i1",
+      "dilate_k3_i2",
+      "dilate_k5_i1",
+      "gain_1.5",
+      "gain_2.0",
+      "dilate_k2_i1_gain_1.5",
+      "aug_stroke_width",
+      "norm_center",
+      "norm_mnist",
+      "norm_mnist_dilate_k2_i1",
+      "norm_mnist_dilate_k3_i1"
+    ]
+  },
+  "preregistration": {
+    "written": "2026-11-05, before any custom_to_mnist run",
+    "custom_to_mnist": {
+      "primary": "dilate_k3_i1",
+      "secondary": [
+        "norm_mnist",
+        "norm_mnist_dilate_k3_i1"
+      ],
+      "hypotheses": [
+        "dilate_k3_i1 on stylus training images raises MNIST test accuracy vs baseline",
+        "MNIST-style size/center normalization (norm_mnist) raises it more than dilation alone"
+      ]
+    }
   }
 }

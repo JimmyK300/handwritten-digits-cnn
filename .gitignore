@@ -60,3 +60,6 @@ testRead.ipynb
 # study outputs that are regenerated
 results_smoke/
 study.log
+results/regimes/models/
+study_c2m.log
+regimes.log

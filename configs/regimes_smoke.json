@@ -1,0 +1,66 @@
+{
+  "description": "Tiny regimes smoke test for CI.",
+  "results_dir": "results_smoke/regimes",
+  "workers": 1,
+  "threads_per_worker": 2,
+  "seeds": [
+    0
+  ],
+  "model": {
+    "in_channels": 1,
+    "conv_channels": [
+      32,
+      32
+    ],
+    "kernel_sizes": [
+      5,
+      3
+    ],
+    "paddings": [
+      2,
+      1
+    ],
+    "hidden_dims": [
+      128,
+      32
+    ],
+    "num_classes": 10
+  },
+  "training": {
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "epochs": 1
+  },
+  "arms": {
+    "baseline": {},
+    "dilate_k3_i1": {
+      "dilate_kernel": 3,
+      "dilate_iterations": 1
+    }
+  },
+  "size_matched_arms": [
+    "baseline"
+  ],
+  "finetune_arms": [
+    "baseline"
+  ],
+  "mixed_k": [
+    2
+  ],
+  "finetune_k": 2,
+  "finetune_lr_scale": 0.1,
+  "preregistration": {
+    "core_hypothesis": "Under a fixed CNN, more writer diversity in training improves accuracy on unseen writers and lowers WriterBias.",
+    "test": "Unseen-writer accuracy and WriterBias (max-min over the 5 writers' held-out splits) as a function of k = number of training writers (1..4), in the full-data series (R2, R3) and in the size-matched series (R3s, ~1712 training images for every k). Supported if unseen accuracy rises and WriterBias falls with k in the size-matched series (Spearman rho over seed-level means, and k=1 vs k=4 paired by seed).",
+    "primary_arm": "baseline"
+  },
+  "max_per_writer": 40,
+  "mnist_train_subset": 300,
+  "mnist_test_subset": 200,
+  "size_fractions": [
+    0.5
+  ],
+  "size_sweep_arms": [
+    "baseline"
+  ]
+}

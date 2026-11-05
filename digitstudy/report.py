@@ -27,8 +27,11 @@ PROTOCOL_LABELS = {
     "sample_split": "Sample split (team's original)",
     "lowo": "Leave-one-writer-out",
     "mnist_to_stylus": "MNIST → stylus",
+    "custom_to_mnist": "Stylus → MNIST (team's regime 4)",
 }
-PROTOCOL_COLORS = {"sample_split": "#2a78d6", "lowo": "#eb6834", "mnist_to_stylus": "#1baf7a"}
+PROTOCOL_COLORS = {"sample_split": "#2a78d6", "lowo": "#eb6834", "mnist_to_stylus": "#1baf7a", "custom_to_mnist": "#eda100"}
+MODEL_COLORS = {"torch": "#2a78d6", "numpy": "#eb6834"}
+MAIN_PROTOCOLS = ["sample_split", "lowo", "mnist_to_stylus"]
 TEXT, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
 
 
@@ -106,6 +109,21 @@ def summed_confusion(runs, protocol: str, model: str, condition: str) -> np.ndar
     return np.sum(cms, axis=0) if cms else None
 
 
+def class_metrics(runs, protocol: str, model: str, condition: str, classes=(7, 8)) -> dict[str, tuple] | None:
+    """Per-seed precision/recall for selected classes -> {metric: (mean, std)} in %."""
+    sel = [r for r in runs if r["protocol"] == protocol and r["model"] == model and r["condition"] == condition]
+    if not sel:
+        return None
+    vals: dict[str, list[float]] = defaultdict(list)
+    for r in sel:
+        cm = np.array(r["confusion"], dtype=float)
+        for k in classes:
+            vals[f"recall_{k}"].append(100 * cm[k, k] / max(cm[k].sum(), 1))
+            vals[f"precision_{k}"].append(100 * cm[k, k] / max(cm[:, k].sum(), 1))
+            vals[f"pred_share_{k}"].append(100 * cm[:, k].sum() / cm.sum())
+    return {m: (float(np.mean(v)), _std(v)) for m, v in vals.items()}
+
+
 # ------------------------------------------------------------------ markdown
 
 
@@ -156,6 +174,25 @@ def markdown_report(cfg, rows, runs) -> str:
                 lines.append(f"| {name} | {_fmt_acc(r)} | {_fmt_delta(r)} |")
             lines.append("")
 
+    c2m = cfg.get("protocol_conditions", {}).get("custom_to_mnist", [])
+    if c2m and any(r["protocol"] == "custom_to_mnist" for r in runs):
+        lines += ["## Stylus → MNIST: the class-7 / class-8 failure", "",
+                  "Per-seed metrics from each run's confusion matrix, mean ± std over seeds, in %. "
+                  "`pred share 8` is the fraction of all MNIST test images predicted as 8 "
+                  "(the true share of 8s is 9.7%).", ""]
+        for model in ["torch", "numpy"]:
+            mlines = []
+            for cond in c2m:
+                m = class_metrics(runs, "custom_to_mnist", model, cond)
+                if m:
+                    cells = " | ".join(f"{m[k][0]:.1f} ± {m[k][1]:.1f}"
+                                       for k in ["recall_7", "precision_8", "recall_8", "pred_share_8"])
+                    mlines.append(f"| {cond} | {cells} |")
+            if mlines:
+                title = "PyTorch CNN" if model == "torch" else "NumPy CNN"
+                lines += [f"### {title}", "", "| Condition | recall 7 | precision 8 | recall 8 | pred share 8 |",
+                          "|---|---|---|---|---|", *mlines, ""]
+
     pw = per_writer_table(runs, "lowo", "torch", [baseline, primary])
     if pw:
         lines += ["## Per held-out writer (PyTorch, leave-one-writer-out)", "",
@@ -173,6 +210,7 @@ def markdown_report(cfg, rows, runs) -> str:
 
 
 def _style(ax):
+    ax.set_axisbelow(True)
     ax.spines[["top", "right"]].set_visible(False)
     ax.spines[["left", "bottom"]].set_color(MUTED)
     ax.tick_params(colors=MUTED, labelsize=9)
@@ -183,8 +221,9 @@ def _style(ax):
 def plot_deltas(cfg, rows, out: Path, model: str = "torch") -> Path | None:
     import matplotlib.pyplot as plt
 
-    conds = [c for c in cfg["conditions"] if c != cfg.get("baseline_condition", "baseline")]
-    protocols = [p for p in PROTOCOL_LABELS if any(r["protocol"] == p and r["model"] == model for r in rows)]
+    conds = [c for c in cfg["conditions"]
+             if c != cfg.get("baseline_condition", "baseline") and not cfg["conditions"][c].get("protocols")]
+    protocols = [p for p in MAIN_PROTOCOLS if any(r["protocol"] == p and r["model"] == model for r in rows)]
     if not protocols:
         return None
     lookup = {(r["protocol"], r["condition"]): r for r in rows if r["model"] == model}
@@ -218,13 +257,56 @@ def plot_deltas(cfg, rows, out: Path, model: str = "torch") -> Path | None:
     return path
 
 
-def plot_confusions(cfg, runs, out: Path, model: str = "torch") -> Path | None:
+def plot_custom_to_mnist(cfg, rows, out: Path) -> Path | None:
+    import matplotlib.pyplot as plt
+
+    base = cfg.get("baseline_condition", "baseline")
+    conds = [c for c in cfg.get("protocol_conditions", {}).get("custom_to_mnist", []) if c != base]
+    lookup = {(r["model"], r["condition"]): r for r in rows if r["protocol"] == "custom_to_mnist"}
+    models = [m for m in ["torch", "numpy"] if any(k[0] == m for k in lookup)]
+    if not conds or not models:
+        return None
+    fig, ax = plt.subplots(figsize=(10, 0.5 * len(conds) + 1.4), dpi=150)
+    height = 0.8 / len(models)
+    y = np.arange(len(conds))
+    for i, model in enumerate(models):
+        pos = y + (i - (len(models) - 1) / 2) * height
+        rs = [lookup.get((model, c)) for c in conds]
+        keep = [j for j, r in enumerate(rs) if r is not None and "delta_pp_mean" in r]
+        means = np.array([rs[j]["delta_pp_mean"] for j in keep])
+        stds = np.array([rs[j]["delta_pp_std"] for j in keep])
+        ax.barh(pos[keep], means, height=height * 0.88, xerr=stds, color=MODEL_COLORS[model],
+                error_kw={"ecolor": MUTED, "elinewidth": 1, "capsize": 2},
+                label="PyTorch CNN" if model == "torch" else "NumPy CNN")
+        for yy, m, sd in zip(pos[keep], means, stds):
+            ax.text(m + (sd + 0.5) * (1 if m >= 0 else -1), yy, f"{m:+.1f}", va="center",
+                    ha="left" if m >= 0 else "right", fontsize=7, color=TEXT)
+    ax.axvline(0, color=MUTED, lw=1)
+    ax.set_yticks(y, conds)
+    ax.invert_yaxis()
+    ax.set_xlabel("MNIST test accuracy change vs baseline (pp, mean ± std over seeds)")
+    ax.grid(axis="x", color=GRID, lw=0.8)
+    ax.set_axisbelow(True)
+    _style(ax)
+    ax.legend(frameon=False, fontsize=9, loc="lower right")
+    ax.set_title("Stylus → MNIST: preprocessing applied to the stylus training images",
+                 loc="left", color=TEXT, fontsize=11)
+    fig.tight_layout()
+    path = out / "deltas_custom_to_mnist.png"
+    fig.savefig(path)
+    plt.close(fig)
+    return path
+
+
+def plot_confusions(cfg, runs, out: Path, model: str = "torch", protocols=("lowo", "mnist_to_stylus"),
+                    conditions=None, name: str | None = None) -> Path | None:
     import matplotlib.pyplot as plt
 
     baseline, primary = cfg.get("baseline_condition", "baseline"), cfg["primary_condition"]
+    conditions = conditions or [baseline, primary]
     panels = []
-    for protocol in ["lowo", "mnist_to_stylus"]:
-        for cond in [baseline, primary]:
+    for protocol in protocols:
+        for cond in conditions:
             cm = summed_confusion(runs, protocol, model, cond)
             if cm is not None:
                 panels.append((protocol, cond, cm))
@@ -253,7 +335,7 @@ def plot_confusions(cfg, runs, out: Path, model: str = "torch") -> Path | None:
         ax.axis("off")
     fig.suptitle("Row-normalised confusion matrices (%), summed over seeds and folds", fontsize=10, color=TEXT)
     fig.tight_layout()
-    path = out / f"confusion_{model}.png"
+    path = out / (name or f"confusion_{model}.png")
     fig.savefig(path)
     plt.close(fig)
     return path
@@ -267,7 +349,8 @@ def plot_examples(cfg, out: Path) -> Path:
 
     writers = D.load_stylus()
     xm, ym = D.load_mnist("t10k")
-    shown = ["baseline", "dilate_k2_i1", "dilate_k3_i1", "dilate_k3_i2", "gain_1.5"]
+    shown = ["baseline", "dilate_k2_i1", "dilate_k3_i1", "dilate_k3_i2", "gain_1.5", "norm_mnist",
+             "norm_mnist_dilate_k3_i1"]
     shown = [c for c in shown if c in cfg["conditions"]]
     names = list(writers)
     digits = [3, 7, 8]
@@ -309,6 +392,13 @@ def build_report(cfg, figures: bool = True) -> dict[str, Any]:
         fig_dir.mkdir(exist_ok=True)
         for model in ["torch", "numpy"]:
             paths += [plot_deltas(cfg, rows, fig_dir, model), plot_confusions(cfg, runs, fig_dir, model)]
+            c2m_all = cfg.get("protocol_conditions", {}).get("custom_to_mnist", [])
+            c2m_conds = [c for c in ["baseline", cfg["primary_condition"], "norm_mnist", "norm_mnist_dilate_k3_i1"]
+                         if c in c2m_all]
+            if c2m_conds:
+                paths.append(plot_confusions(cfg, runs, fig_dir, model, ("custom_to_mnist",), c2m_conds,
+                                             f"confusion_custom_to_mnist_{model}.png"))
+        paths.append(plot_custom_to_mnist(cfg, rows, fig_dir))
         paths.append(plot_examples(cfg, fig_dir))
     print(f"[report] wrote {out_dir.as_posix()}/RESULTS.md, summary.json and {len([p for p in paths if p])} figures")
     return {"rows": rows, "figures": [str(p) for p in paths if p]}

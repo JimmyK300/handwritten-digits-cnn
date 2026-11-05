@@ -9,7 +9,8 @@
   "protocols": [
     "sample_split",
     "lowo",
-    "mnist_to_stylus"
+    "mnist_to_stylus",
+    "custom_to_mnist"
   ],
   "baseline_condition": "baseline",
   "primary_condition": "dilate_k3_i1",
@@ -56,6 +57,14 @@
     "aug_stroke_width": {
       "preprocess": {},
       "augment": "stroke_width"
+    },
+    "norm_mnist": {
+      "preprocess": {
+        "normalize": "mnist"
+      },
+      "protocols": [
+        "custom_to_mnist"
+      ]
     }
   },
   "numpy_cnn": {
@@ -88,5 +97,13 @@
     }
   },
   "max_per_writer": 60,
-  "mnist_train_subset": 300
+  "mnist_train_subset": 300,
+  "mnist_test_subset": 300,
+  "protocol_conditions": {
+    "custom_to_mnist": [
+      "baseline",
+      "dilate_k3_i1",
+      "norm_mnist"
+    ]
+  }
 }
