@@ -286,7 +286,7 @@ python -m digitstudy.domain_gap final    # domain gap: test runs, seeds 0-4
 python -m digitstudy domain-gap-report   # results/domain_gap/DOMAIN_GAP.md
 python -m digitstudy holm                # results/HOLM.md (Holm correction over all exploratory tests)
 ```
-Interrupted runs resume where they stopped (see `RESUME.md`); set `DIGITSTUDY_DEVICE=dml` to train the domain-gap runs on a DirectML GPU.
+Interrupted runs resume where they stopped: rerun the same command and finished runs are skipped. Set `DIGITSTUDY_DEVICE=dml` to train the domain-gap runs on a DirectML GPU.
 
 ## References
 

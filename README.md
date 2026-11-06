@@ -116,7 +116,7 @@ python -m digitstudy domain-gap-report # results/domain_gap/DOMAIN_GAP.md
 python -m digitstudy holm              # results/HOLM.md: Holm correction over all exploratory tests
 pytest -q                         # unit tests, gradient checks, pipeline test
 ```
-Interrupted runs resume; see [`RESUME.md`](RESUME.md). `DIGITSTUDY_DEVICE=dml` trains the domain-gap runs on a DirectML GPU.
+Interrupted runs resume: rerun the same command and finished runs in `runs.jsonl` are skipped. `DIGITSTUDY_DEVICE=dml` trains the domain-gap runs on a DirectML GPU (`pip install torch-directml`), and `DIGITSTUDY_WORKERS=N` sets their worker count.
 
 Edit `configs/study.json` or `configs/regimes.json` to change seeds, conditions, regimes or worker count.
 
