@@ -45,11 +45,17 @@ def prf(cm: np.ndarray) -> dict[str, Any]:
 
 def group_of(r) -> str:
     k = len(r["train_writers"])
-    if r["regime"] in ("R3f", "R4f"):
-        base = "R3 k=3" if r["regime"] == "R3f" else "R4"
-        return f"{base} @{int(round(100 * r['fraction']))}%"
+    if r["regime"] in ("R3f", "R4f", "R3fe", "R4fe"):
+        base = "R3 k=3" if r["regime"].startswith("R3") else "R4"
+        eq = " eq" if r["regime"].endswith("e") else ""
+        return f"{base} @{int(round(100 * r['fraction']))}%{eq}"
+    if r["regime"] == "R5s":
+        who = "1 writer" if k == 1 else f"{k} writers"
+        return f"R5 ({who}) lr×{r['lr_scale']:g} ep{r['epochs']}"
     if r["regime"] == "R1":
         return "R1"
+    if r["regime"] == "R1m":
+        return f"R1m n={r['n_train']}"
     if r["regime"] == "R5":
         return "R5 (1 writer)" if k == 1 else f"R5 ({k} writers)"
     if r["regime"] == "R3s":
@@ -68,7 +74,7 @@ def derive(r: dict[str, Any], r1_mnist: dict[int, float]) -> dict[str, Any]:
     d: dict[str, Any] = {"mnist_acc": tests["mnist"]["acc"], "train_acc": r["train_acc"], "n_train": r["n_train"]}
     d["writer_bias"] = max(acc.values()) - min(acc.values())
     d["all_writers_acc"] = float(np.mean(list(acc.values())))
-    if r["regime"] == "R1":
+    if r["regime"] in ("R1", "R1m"):
         seen_acc, seen_loss = tests["mnist"]["acc"], tests["mnist"]["loss"]
         d["seen_acc"] = seen_acc
         unseen = writers
@@ -81,14 +87,14 @@ def derive(r: dict[str, Any], r1_mnist: dict[int, float]) -> dict[str, Any]:
     d["gap_loss"] = seen_loss - r["train_loss"]
     if unseen:
         d["unseen_acc"] = float(np.mean([acc[w] for w in unseen]))
-        if r["regime"] != "R1":
+        if r["regime"] not in ("R1", "R1m"):
             d["cross_gap"] = d["seen_acc"] - d["unseen_acc"]
         cm = sum(np.array(tests[w]["confusion"]) for w in unseen)
         d["unseen_macro_f1"] = prf(cm)["macro_f1"]
         if len(unseen) >= 2:
             d["writer_bias_unseen"] = max(acc[w] for w in unseen) - min(acc[w] for w in unseen)
     d["mnist_macro_f1"] = prf(np.array(tests["mnist"]["confusion"]))["macro_f1"]
-    if r["regime"] == "R5" and r["seed"] in r1_mnist:
+    if r["regime"] in ("R5", "R5s") and r["seed"] in r1_mnist:
         d["forgetting"] = r1_mnist[r["seed"]] - tests["mnist"]["acc"]
     if r.get("curve"):
         c = {p["epoch"]: p for p in r["curve"]}
@@ -132,7 +138,7 @@ def _paired(a, b):
 
 
 GROUP_ORDER = ["R1", "R2", "R3 k=2", "R3 k=3", "R3 k=4", "R4", "R3s k=2", "R3s k=3", "R3s k=4",
-               "R5 (1 writer)", "R5 (3 writers)"]
+               "R5 (1 writer)", "R5 (3 writers)", "R1m n=1712", "R1m n=3424", "R1m n=5136", "R1m n=6848"]
 
 
 def markdown(cfg, runs, agg) -> str:
@@ -240,6 +246,27 @@ def markdown(cfg, runs, agg) -> str:
         L.append(f"| {grp} | " + " | ".join(cells) + " |")
     L.append("")
 
+    # equal-steps size sweep
+    efr = [int(round(100 * f)) for f in cfg.get("equal_steps_fractions", [])]
+    if efr and g(f"R4 @{efr[0]}% eq"):
+        L += ["## 2c. Size sweep with equal optimizer steps (RQ2 without the underfitting confound)", "",
+              f"Epochs = round({cfg['training']['epochs']} / share), so every row takes the optimizer steps of the 100% run.", "",
+              "| Regime | Share | Train images | Epochs | Train acc | Gap acc (pp) | Gap loss | Seen held-out acc | Unseen-writer acc | WriterBias (5 writers) | MNIST acc |",
+              "|---|---|---|---|---|---|---|---|---|---|---|"]
+        for base in ("R3 k=3", "R4"):
+            for pct in efr + [100]:
+                a = g(base if pct == 100 else f"{base} @{pct}% eq")
+                if not a:
+                    continue
+                ep = int(round(cfg["training"]["epochs"] * 100 / pct))
+                L.append(f"| {base} | {pct}% | {int(round(a['n_train'][0]))} | {ep} | {_pct(a['train_acc'])} | {_pct(a['gap_acc'])} | "
+                         f"{_pct(a['gap_loss'], 3, 1.0)} | {_pct(a['seen_acc'])} | {_pct(a.get('unseen_acc'))} | "
+                         f"{_pct(a['writer_bias'])} | {_pct(a['mnist_acc'])} |")
+        L.append("")
+        for t in size_tests(agg, efr, " eq"):
+            L.append(f"- {t}")
+        L.append("")
+
     # R5
     L += ["## 4. R5: MNIST pre-training + fine-tuning (lr × 0.1)", "",
           "| Arm | Data | Init | Same/seen-writer acc | Unseen-writer acc | MNIST acc | Forgetting vs R1 (pp) | Unseen acc after 1 epoch |",
@@ -260,6 +287,29 @@ def markdown(cfg, runs, agg) -> str:
     for line in r5_tests(agg, cfg):
         L.append(f"- {line}")
     L.append("")
+
+    # R5 sweep
+    sw = cfg.get("finetune_sweep")
+    if sw:
+        k = cfg.get("finetune_k", 3)
+        L += ["## 4b. R5 fine-tuning sweep: learning rate × epochs (baseline arm)", "",
+              "Gain = unseen-writer accuracy minus the scratch model on the same data (R2 or R3), paired by seed. "
+              "Forgetting = R1's MNIST accuracy minus the fine-tuned model's, same seed.", "",
+              "| Data | lr scale | Epochs | Unseen-writer acc | Gain vs scratch (pp) | p (gain) | MNIST acc | Forgetting (pp) | p (forgetting > 0) |",
+              "|---|---|---|---|---|---|---|---|---|"]
+        for who, scratch in (("1 writer", "R2"), (f"{k} writers", f"R3 k={k}")):
+            for lr_s in sw["lr_scales"]:
+                for ep in sw["epochs"]:
+                    grp = r5_group(cfg, who, lr_s, ep)
+                    a, sc = g(grp), g(scratch)
+                    if not a or "unseen_acc" not in a:
+                        continue
+                    dm, ds, p = _paired(sc["unseen_acc"][2], a["unseen_acc"][2])
+                    fg = a.get("forgetting")
+                    pf = _paired([0.0] * len(fg[2]), fg[2])[2] if fg else float("nan")
+                    L.append(f"| {who} | ×{lr_s:g} | {ep} | {_pct(a['unseen_acc'])} | {dm:+.1f} ± {ds:.1f} | {p:.2g} | "
+                             f"{_pct(a['mnist_acc'])} | {_pct(fg)} | {pf:.2g} |")
+        L.append("")
 
     # per-class
     L += ["## 5. Per-class precision / recall / F1 (baseline arm, confusion matrices summed over seeds and combinations)", ""]
@@ -307,6 +357,12 @@ def markdown(cfg, runs, agg) -> str:
     return "\n".join(L) + "\n"
 
 
+def r5_group(cfg, who: str, lr_s: float, ep: int) -> str:
+    if lr_s == float(cfg.get("finetune_lr_scale", 0.1)) and ep == cfg["training"]["epochs"]:
+        return f"R5 ({who})"
+    return f"R5 ({who}) lr×{lr_s:g} ep{ep}"
+
+
 def diversity_tests(agg) -> list[str]:
     from scipy import stats
 
@@ -333,7 +389,7 @@ def diversity_tests(agg) -> list[str]:
     return out
 
 
-def size_tests(agg, fractions) -> list[str]:
+def size_tests(agg, fractions, suffix: str = "") -> list[str]:
     from scipy import stats
 
     out = []
@@ -341,7 +397,7 @@ def size_tests(agg, fractions) -> list[str]:
         for metric, label in (("gap_acc", "gap acc"), ("gap_loss", "gap loss"), ("writer_bias", "WriterBias")):
             xs, vs, ends = [], [], {}
             for pct in fractions + [100]:
-                s = agg.get((base if pct == 100 else f"{base} @{pct}%", "baseline"), {}).get(metric)
+                s = agg.get((base if pct == 100 else f"{base} @{pct}%{suffix}", "baseline"), {}).get(metric)
                 if s:
                     xs += [pct] * len(s[2])
                     vs += s[2]
@@ -483,18 +539,19 @@ def figures(cfg, agg, runs, out: Path) -> list[Path]:
     for ax, metric, ylabel in ((axes[0], "seen_acc", "Seen-writer held-out acc (%)"),
                                (axes[1], "gap_acc", "Gap: train − held-out acc (pp)"),
                                (axes[2], "writer_bias", "WriterBias, 5 writers (pp)")):
-        for base, color in (("R3 k=3", "#2a78d6"), ("R4", "#eb6834")):
+        for base, color, suffix, ls in (("R3 k=3", "#2a78d6", "", "-"), ("R4", "#eb6834", "", "-"),
+                                        ("R3 k=3", "#2a78d6", " eq", "--"), ("R4", "#eb6834", " eq", "--")):
             xs, mm, ss = [], [], []
             for f in fracs:
-                g = base if f == 1.0 else f"{base} @{int(round(100 * f))}%"
+                g = base if f == 1.0 else f"{base} @{int(round(100 * f))}%{suffix}"
                 st = agg.get((g, "baseline"), {}).get(metric)
                 if st:
                     xs.append(100 * f)
                     mm.append(100 * st[0])
                     ss.append(100 * st[1])
-            if xs:
-                ax.errorbar(xs, mm, yerr=ss, marker="o", ms=5, lw=2, capsize=3, color=color,
-                            label="R3, 3 writers" if base == "R3 k=3" else "R4, all 5 writers")
+            if len(xs) > 1:
+                lab = ("R3, 3 writers" if base == "R3 k=3" else "R4, all 5 writers") + (", equal steps" if suffix else ", 5 epochs")
+                ax.errorbar(xs, mm, yerr=ss, marker="s" if suffix else "o", ms=5, lw=2, ls=ls, capsize=3, color=color, label=lab)
         ax.set_xscale("log")
         ax.set_xticks([10, 25, 50, 100], ["10%", "25%", "50%", "100%"])
         ax.minorticks_off()
@@ -509,6 +566,37 @@ def figures(cfg, agg, runs, out: Path) -> list[Path]:
     fig.savefig(p)
     plt.close(fig)
     paths.append(p)
+
+    # R5 sweep tradeoff
+    sw = cfg.get("finetune_sweep")
+    if sw:
+        k = cfg.get("finetune_k", 3)
+        fig, ax = plt.subplots(figsize=(6.4, 4.2), dpi=150)
+        for (who, scratch), color in zip((("1 writer", "R2"), (f"{k} writers", f"R3 k={k}")), ("#2a78d6", "#eb6834")):
+            first = True
+            for lr_s in sw["lr_scales"]:
+                for ep in sw["epochs"]:
+                    a_ = agg.get((r5_group(cfg, who, lr_s, ep), "baseline"), {})
+                    sc = agg.get((scratch, "baseline"), {})
+                    if "forgetting" not in a_ or "unseen_acc" not in a_:
+                        continue
+                    gain = 100 * (np.array(a_["unseen_acc"][2]) - np.array(sc["unseen_acc"][2]))
+                    fg = 100 * np.array(a_["forgetting"][2])
+                    ax.errorbar(fg.mean(), gain.mean(), xerr=fg.std(ddof=1), yerr=gain.std(ddof=1), fmt="o" if ep == 5 else "s",
+                                ms=6, color=color, capsize=2, lw=1, label=f"{who} (circle: 5 epochs, square: 15)" if first else None)
+                    first = False
+                    ax.annotate(f"lr×{lr_s:g}", (fg.mean(), gain.mean()), xytext=(5, 4), textcoords="offset points", fontsize=7, color=TEXT)
+        ax.set_xlabel("MNIST forgetting vs R1 (pp)")
+        ax.set_ylabel("Unseen-writer gain vs scratch (pp)")
+        ax.grid(color=GRID, lw=0.8)
+        ax.legend(frameon=False, fontsize=7)
+        _style(ax)
+        ax.set_title("R5 fine-tuning: forgetting vs gain", fontsize=10, color=TEXT)
+        fig.tight_layout()
+        p = out / "regimes_finetune_tradeoff.png"
+        fig.savefig(p)
+        plt.close(fig)
+        paths.append(p)
     return paths
 
 

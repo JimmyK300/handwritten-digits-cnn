@@ -97,24 +97,141 @@ def mnist_normalize(images: np.ndarray, box: int = 20, threshold: float = 0.05, 
     return out[0] if squeeze else out
 
 
+# ------------------------------------------------------------------ domain-gap transforms
+
+
+def _moments(img: np.ndarray):
+    t = img.sum()
+    if t <= 0:
+        return 13.5, 13.5, 0.0
+    yy, xx = np.mgrid[: img.shape[0], : img.shape[1]]
+    cy, cx = (yy * img).sum() / t, (xx * img).sum() / t
+    mu11 = ((xx - cx) * (yy - cy) * img).sum() / t
+    mu02 = ((yy - cy) ** 2 * img).sum() / t
+    return cy, cx, (mu11 / mu02 if mu02 > 0 else 0.0)
+
+
+def _affine_about(img: np.ndarray, matrix: np.ndarray, center) -> np.ndarray:
+    """Output pixel p samples input at matrix @ (p - center) + center (row, col order)."""
+    from scipy.ndimage import affine_transform
+
+    c = np.asarray(center, float)
+    return np.clip(affine_transform(img, matrix, offset=c - matrix @ c, order=1, mode="constant"), 0, 1).astype(img.dtype)
+
+
+def shear_to(images: np.ndarray, target_skew: np.ndarray | float = 0.0) -> np.ndarray:
+    """Shear each image about its center of mass so its skew mu11/mu02 becomes `target_skew`.
+
+    target_skew = 0 is classic deslanting (as in LeCun et al.'s deskewed MNIST)."""
+    tgt = np.broadcast_to(np.asarray(target_skew, float), (len(images),))
+    out = np.empty_like(images)
+    for i, img in enumerate(images):
+        cy, cx, skew = _moments(img)
+        d = skew - tgt[i]  # x_in = x_out + d * (y - cy)
+        out[i] = _affine_about(img, np.array([[1.0, 0.0], [d, 1.0]]), (cy, cx))
+    return out
+
+
+def hstretch(images: np.ndarray, factor: np.ndarray | float) -> np.ndarray:
+    """Scale each image horizontally by `factor` about its center of mass."""
+    f = np.broadcast_to(np.asarray(factor, float), (len(images),))
+    out = np.empty_like(images)
+    for i, img in enumerate(images):
+        cy, cx, _ = _moments(img)
+        out[i] = _affine_about(img, np.array([[1.0, 0.0], [0.0, 1.0 / f[i]]]), (cy, cx))
+    return out
+
+
+def peak_normalize(images: np.ndarray) -> np.ndarray:
+    """Divide each image by its maximum so the brightest ink pixel is 1."""
+    m = images.reshape(len(images), -1).max(1)
+    return (images / np.maximum(m, 1e-6)[:, None, None]).astype(images.dtype)
+
+
+def gaussian_blur(images: np.ndarray, sigma: float, renorm: bool = True) -> np.ndarray:
+    """Soften edges with a Gaussian (sigma in px); renorm restores each image's peak."""
+    from scipy.ndimage import gaussian_filter
+
+    out = gaussian_filter(images, sigma=(0, sigma, sigma)).astype(images.dtype)
+    if renorm:
+        peak = images.reshape(len(images), -1).max(1) / np.maximum(out.reshape(len(out), -1).max(1), 1e-6)
+        out = np.clip(out * peak[:, None, None], 0, 1).astype(images.dtype)
+    return out
+
+
+def binarize(images: np.ndarray, threshold: float = 0.5, value: float = 1.0) -> np.ndarray:
+    return ((images > threshold) * value).astype(images.dtype)
+
+
+def thin(images: np.ndarray, threshold: float = 0.5) -> np.ndarray:
+    """Zhang-Suen thinning of the binarized ink to one-pixel strokes (vectorized over the batch)."""
+    b = np.pad(images > threshold, ((0, 0), (1, 1), (1, 1))).astype(np.uint8)
+    while True:
+        changed = False
+        for step in (0, 1):
+            P = b
+            p2, p3, p4 = P[:, :-2, 1:-1], P[:, :-2, 2:], P[:, 1:-1, 2:]
+            p5, p6, p7 = P[:, 2:, 2:], P[:, 2:, 1:-1], P[:, 2:, :-2]
+            p8, p9 = P[:, 1:-1, :-2], P[:, :-2, :-2]
+            nb = [p2, p3, p4, p5, p6, p7, p8, p9]
+            B = sum(n.astype(np.int16) for n in nb)
+            A = sum(((nb[k] == 0) & (nb[(k + 1) % 8] == 1)).astype(np.int16) for k in range(8))
+            c = P[:, 1:-1, 1:-1] == 1
+            if step == 0:
+                m = c & (B >= 2) & (B <= 6) & (A == 1) & (p2 * p4 * p6 == 0) & (p4 * p6 * p8 == 0)
+            else:
+                m = c & (B >= 2) & (B <= 6) & (A == 1) & (p2 * p4 * p8 == 0) & (p2 * p6 * p8 == 0)
+            if m.any():
+                b[:, 1:-1, 1:-1][m] = 0
+                changed = True
+        if not changed:
+            break
+    return b[:, 1:-1, 1:-1].astype(images.dtype)
+
+
+def shift_int(images: np.ndarray, dx: np.ndarray, dy: np.ndarray) -> np.ndarray:
+    """Shift each image by whole pixels (dx right, dy down), zero-filled."""
+    out = np.zeros_like(images)
+    h, w = images.shape[1:]
+    for i, img in enumerate(images):
+        x, y = int(dx[i]), int(dy[i])
+        ys, yd = (slice(0, h - y), slice(y, h)) if y >= 0 else (slice(-y, h), slice(0, h + y))
+        xs, xd = (slice(0, w - x), slice(x, w)) if x >= 0 else (slice(-x, w), slice(0, w + x))
+        out[i][yd, xd] = img[ys, xs]
+    return out
+
+
 def apply_preprocess(images: np.ndarray, spec: dict[str, Any] | None) -> np.ndarray:
     """Apply a deterministic preprocessing spec.
 
     spec keys (all optional, applied in this order):
-      normalize: "mnist" | "center"     -> size/position normalization (first)
+      deslant: true                     -> shear each image to zero skew
+      hstretch: float                   -> horizontal scale about the center of mass
+      normalize: "mnist" | "center"     -> size/position normalization
+      peak: true                        -> per-image max -> 1
       dilate_kernel, dilate_iterations  -> grayscale dilation
       erode_kernel, erode_iterations    -> grayscale erosion
+      blur: float                       -> Gaussian blur sigma (peak restored)
       gain                              -> brightness gain (applied last)
+    The original keys (normalize, dilate, erode, gain) keep their earlier behaviour.
     """
     if not spec:
         return images
     out = images
+    if spec.get("deslant"):
+        out = shear_to(out, 0.0)
+    if spec.get("hstretch"):
+        out = hstretch(out, float(spec["hstretch"]))
     if spec.get("normalize"):  # "mnist" (rescale + center) or "center" (center only)
         out = mnist_normalize(out, rescale=spec["normalize"] == "mnist")
+    if spec.get("peak"):
+        out = peak_normalize(out)
     if spec.get("dilate_kernel", 1) > 1 and spec.get("dilate_iterations", 0) > 0:
         out = dilate(out, int(spec["dilate_kernel"]), int(spec["dilate_iterations"]))
     if spec.get("erode_kernel", 1) > 1 and spec.get("erode_iterations", 0) > 0:
         out = erode(out, int(spec["erode_kernel"]), int(spec["erode_iterations"]))
+    if spec.get("blur"):
+        out = gaussian_blur(out, float(spec["blur"]))
     if spec.get("gain", 1.0) != 1.0:
         out = brightness(out, float(spec["gain"]))
     return out

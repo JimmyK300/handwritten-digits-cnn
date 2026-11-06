@@ -1,0 +1,544 @@
+{
+  "description": "MNIST <-> stylus domain gap (REPORT.md section 3). Recipes, candidates, selection seeds and analysis plan fixed on 2026-11-05 before any run; the headline per direction is chosen on validation data by `select` and written below before `final`.",
+  "results_dir": "results/domain_gap",
+  "workers": 4,
+  "threads_per_worker": 4,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "selection_seeds": [
+    100,
+    101,
+    102
+  ],
+  "mnist_val_size": 10000,
+  "model": {
+    "in_channels": 1,
+    "conv_channels": [
+      32,
+      32
+    ],
+    "kernel_sizes": [
+      5,
+      3
+    ],
+    "paddings": [
+      2,
+      1
+    ],
+    "hidden_dims": [
+      128,
+      32
+    ],
+    "num_classes": 10
+  },
+  "training": {
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "epochs": 5
+  },
+  "recipes": {
+    "baseline": {},
+    "f_center": {
+      "pre_train": {
+        "normalize": "center"
+      }
+    },
+    "f_aspect": {
+      "pre_train": {
+        "hstretch": 1.3
+      }
+    },
+    "f_slant": {
+      "aug": [
+        "slant"
+      ]
+    },
+    "f_width": {
+      "pre_train": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      }
+    },
+    "f_intensity": {
+      "pre_train": {
+        "peak": true
+      }
+    },
+    "f_soft": {
+      "pre_train": {
+        "blur": 0.6
+      }
+    },
+    "c2_center_aspect": {
+      "pre_train": {
+        "normalize": "center",
+        "hstretch": 1.3
+      }
+    },
+    "c3_+slant": {
+      "pre_train": {
+        "normalize": "center",
+        "hstretch": 1.3
+      },
+      "aug": [
+        "slant"
+      ]
+    },
+    "c4_+width": {
+      "pre_train": {
+        "normalize": "center",
+        "hstretch": 1.3,
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "slant"
+      ]
+    },
+    "c5_+intensity": {
+      "pre_train": {
+        "normalize": "center",
+        "hstretch": 1.3,
+        "dilate_kernel": 3,
+        "dilate_iterations": 1,
+        "peak": true
+      },
+      "aug": [
+        "slant"
+      ]
+    },
+    "c6_+soft": {
+      "pre_train": {
+        "normalize": "center",
+        "hstretch": 1.3,
+        "dilate_kernel": 3,
+        "dilate_iterations": 1,
+        "peak": true,
+        "blur": 0.6
+      },
+      "aug": [
+        "slant"
+      ]
+    },
+    "norm_train": {
+      "pre_train": {
+        "normalize": "mnist"
+      }
+    },
+    "norm_dil_train": {
+      "pre_train": {
+        "normalize": "mnist",
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      }
+    },
+    "normboth": {
+      "pre_both": {
+        "normalize": "mnist"
+      }
+    },
+    "normboth_dil": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_train": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      }
+    },
+    "normboth_rdil": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "aug": [
+        "rand_dilate"
+      ]
+    },
+    "normboth_dil_affine": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_train": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "affine"
+      ]
+    },
+    "normboth_dil_elastic": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_train": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "elastic"
+      ]
+    },
+    "normboth_dil_noise": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_train": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "noise"
+      ]
+    },
+    "normboth_dil_blur": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_train": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "blur"
+      ]
+    },
+    "normboth_deslant_dil": {
+      "pre_both": {
+        "deslant": true,
+        "normalize": "mnist"
+      },
+      "pre_train": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      }
+    },
+    "normboth_dil_affine_elastic": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_train": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "affine",
+        "elastic"
+      ]
+    },
+    "normboth_dil_affine_noise_blur": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_train": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "affine",
+        "blur",
+        "noise"
+      ]
+    },
+    "normboth_deslant_dil_affine": {
+      "pre_both": {
+        "deslant": true,
+        "normalize": "mnist"
+      },
+      "pre_train": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "affine"
+      ]
+    },
+    "normboth_rdil_affine": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "aug": [
+        "rand_dilate",
+        "affine"
+      ]
+    },
+    "normboth_testdil": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_test": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      }
+    },
+    "normboth_testdil2": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_test": {
+        "dilate_kernel": 2,
+        "dilate_iterations": 1
+      }
+    },
+    "normboth_rerode": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "aug": [
+        "rand_erode"
+      ]
+    },
+    "normboth_contrast_hard": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "aug": [
+        "contrast",
+        "hard"
+      ]
+    },
+    "normboth_affine": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "aug": [
+        "affine"
+      ]
+    },
+    "normboth_elastic": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "aug": [
+        "elastic"
+      ]
+    },
+    "normboth_noise": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "aug": [
+        "noise"
+      ]
+    },
+    "normboth_deslant": {
+      "pre_both": {
+        "deslant": true,
+        "normalize": "mnist"
+      }
+    },
+    "normboth_affine_erode_contrast": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "aug": [
+        "affine",
+        "rand_erode",
+        "contrast"
+      ]
+    },
+    "normboth_testdil_affine": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_test": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "affine"
+      ]
+    },
+    "normboth_testdil_affine_elastic": {
+      "pre_both": {
+        "normalize": "mnist"
+      },
+      "pre_test": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "affine",
+        "elastic"
+      ]
+    },
+    "normboth_deslant_testdil_affine": {
+      "pre_both": {
+        "deslant": true,
+        "normalize": "mnist"
+      },
+      "pre_test": {
+        "dilate_kernel": 3,
+        "dilate_iterations": 1
+      },
+      "aug": [
+        "affine"
+      ]
+    }
+  },
+  "candidates": {
+    "s2m": [
+      "baseline",
+      "norm_train",
+      "norm_dil_train",
+      "normboth",
+      "normboth_dil",
+      "normboth_rdil",
+      "normboth_dil_affine",
+      "normboth_dil_elastic",
+      "normboth_dil_noise",
+      "normboth_dil_blur",
+      "normboth_deslant_dil",
+      "normboth_dil_affine_elastic",
+      "normboth_dil_affine_noise_blur",
+      "normboth_deslant_dil_affine",
+      "normboth_rdil_affine"
+    ],
+    "m2s": [
+      "baseline",
+      "normboth",
+      "normboth_testdil",
+      "normboth_testdil2",
+      "normboth_rerode",
+      "normboth_contrast_hard",
+      "normboth_affine",
+      "normboth_elastic",
+      "normboth_noise",
+      "normboth_deslant",
+      "normboth_affine_erode_contrast",
+      "normboth_testdil_affine",
+      "normboth_testdil_affine_elastic",
+      "normboth_deslant_testdil_affine"
+    ]
+  },
+  "final": {
+    "s2m": [
+      "baseline",
+      "norm_train",
+      "norm_dil_train",
+      "normboth",
+      "normboth_dil",
+      "normboth_rdil",
+      "normboth_dil_affine",
+      "normboth_dil_elastic",
+      "normboth_dil_noise",
+      "normboth_dil_blur",
+      "normboth_deslant_dil",
+      "normboth_dil_affine_elastic",
+      "normboth_dil_affine_noise_blur",
+      "normboth_deslant_dil_affine",
+      "normboth_rdil_affine",
+      "f_center",
+      "f_aspect",
+      "f_slant",
+      "f_width",
+      "f_intensity",
+      "f_soft",
+      "c2_center_aspect",
+      "c3_+slant",
+      "c4_+width",
+      "c5_+intensity",
+      "c6_+soft"
+    ],
+    "m2s": [
+      "baseline",
+      "normboth",
+      "normboth_testdil",
+      "normboth_testdil2",
+      "normboth_rerode",
+      "normboth_contrast_hard",
+      "normboth_affine",
+      "normboth_elastic",
+      "normboth_noise",
+      "normboth_deslant",
+      "normboth_affine_erode_contrast",
+      "normboth_testdil_affine",
+      "normboth_testdil_affine_elastic",
+      "normboth_deslant_testdil_affine"
+    ]
+  },
+  "factor_order": [
+    "c1=f_center",
+    "c2_center_aspect",
+    "c3_+slant",
+    "c4_+width",
+    "c5_+intensity",
+    "c6_+soft"
+  ],
+  "reverse": {
+    "models_dir": "results/regimes/models",
+    "variants": {
+      "clean": [],
+      "thin": [
+        "thin"
+      ],
+      "hard": [
+        "hard"
+      ],
+      "dim": [
+        "dim"
+      ],
+      "uncenter": [
+        "uncenter"
+      ],
+      "narrow": [
+        "narrow"
+      ],
+      "upright": [
+        "upright"
+      ],
+      "all": [
+        "upright",
+        "narrow",
+        "thin",
+        "uncenter"
+      ]
+    }
+  },
+  "preregistration": {
+    "analysis": "For each direction the headline recipe (chosen on validation data) is compared with the baseline on the test set over seeds 0-4 (paired t-test): this is the confirmatory test. All other recipe-vs-baseline comparisons are exploratory and Holm-corrected together.",
+    "headline_s2m": "normboth_dil_affine",
+    "headline_s2m_note": "Chosen automatically on 2026-11-06 as the best mean validation accuracy over selection seeds [100, 101, 102], before any final (test) run.",
+    "headline_m2s": "normboth_deslant",
+    "headline_m2s_note": "Chosen automatically on 2026-11-06 as the best mean validation accuracy over selection seeds [100, 101, 102], before any final (test) run.",
+    "selection_val_acc": {
+      "s2m": {
+        "normboth_dil_affine": 0.8088666666666667,
+        "normboth_deslant_dil_affine": 0.8088333333333333,
+        "normboth_rdil_affine": 0.8040666666666666,
+        "normboth_dil_elastic": 0.7904666666666667,
+        "normboth_dil_affine_noise_blur": 0.7817,
+        "normboth_dil_affine_elastic": 0.7816333333333333,
+        "normboth_deslant_dil": 0.7583000000000001,
+        "normboth_rdil": 0.7378666666666667,
+        "normboth_dil": 0.7071333333333333,
+        "normboth_dil_blur": 0.6858333333333334,
+        "normboth_dil_noise": 0.684,
+        "norm_dil_train": 0.6770999999999999,
+        "normboth": 0.6568,
+        "norm_train": 0.6368666666666667,
+        "baseline": 0.5119666666666667
+      },
+      "m2s": {
+        "normboth_deslant": 0.9243910031909097,
+        "normboth_noise": 0.9220951046774069,
+        "normboth_affine_erode_contrast": 0.9138843489765741,
+        "normboth": 0.9129115106233948,
+        "normboth_affine": 0.9128725970892676,
+        "normboth_contrast_hard": 0.9076970970503542,
+        "normboth_testdil_affine": 0.9045451007860534,
+        "normboth_rerode": 0.902599424079695,
+        "normboth_testdil2": 0.9019378939995332,
+        "normboth_deslant_testdil_affine": 0.8900303525566192,
+        "normboth_testdil": 0.8769943186240173,
+        "normboth_testdil_affine_elastic": 0.8713518561755779,
+        "normboth_elastic": 0.8470698108802241,
+        "baseline": 0.8229045061872519
+      }
+    }
+  }
+}

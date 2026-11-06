@@ -1,0 +1,1524 @@
+[
+ {
+  "family": "Dilation study",
+  "test": "numpy, custom_to_mnist: dilate_k3_i1 vs baseline",
+  "effect": "+6.52 pp",
+  "p": 0.03978499716060203,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "numpy, custom_to_mnist: norm_mnist vs baseline",
+  "effect": "+12.20 pp",
+  "p": 0.0025336242661704355,
+  "confirmatory": false,
+  "p_holm": 0.2432279295523618
+ },
+ {
+  "family": "Dilation study",
+  "test": "numpy, custom_to_mnist: norm_mnist_dilate_k3_i1 vs baseline",
+  "effect": "+12.61 pp",
+  "p": 0.0011645124073119888,
+  "confirmatory": false,
+  "p_holm": 0.12576733998969478
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: aug_stroke_width vs baseline",
+  "effect": "+7.28 pp",
+  "p": 0.13948734305596078,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: dilate_k2_i1 vs baseline",
+  "effect": "+7.77 pp",
+  "p": 0.055981176568909455,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: dilate_k2_i1_gain_1.5 vs baseline",
+  "effect": "+9.58 pp",
+  "p": 0.039513551340989016,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: dilate_k2_i2 vs baseline",
+  "effect": "+2.29 pp",
+  "p": 0.5113179190952145,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: dilate_k3_i1 vs baseline",
+  "effect": "+12.59 pp",
+  "p": 0.024491673289795648,
+  "confirmatory": true
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: dilate_k3_i2 vs baseline",
+  "effect": "-5.86 pp",
+  "p": 0.14275319898069472,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: dilate_k5_i1 vs baseline",
+  "effect": "-5.86 pp",
+  "p": 0.14275319898069472,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: gain_1.5 vs baseline",
+  "effect": "+4.93 pp",
+  "p": 0.04395556526671129,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: gain_2.0 vs baseline",
+  "effect": "+7.24 pp",
+  "p": 0.04939754436478386,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: norm_center vs baseline",
+  "effect": "+17.42 pp",
+  "p": 0.0027738185902781917,
+  "confirmatory": false,
+  "p_holm": 0.26073894748615
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: norm_mnist vs baseline",
+  "effect": "+19.87 pp",
+  "p": 0.0014168328274371852,
+  "confirmatory": false,
+  "p_holm": 0.14593378122603007
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: norm_mnist_dilate_k2_i1 vs baseline",
+  "effect": "+18.37 pp",
+  "p": 0.006538212744335772,
+  "confirmatory": false,
+  "p_holm": 0.542671657779869
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, custom_to_mnist: norm_mnist_dilate_k3_i1 vs baseline",
+  "effect": "+22.11 pp",
+  "p": 0.0007056030002337789,
+  "confirmatory": false,
+  "p_holm": 0.08608356602852102
+ },
+ {
+  "family": "Dilation study",
+  "test": "numpy, lowo: dilate_k2_i1 vs baseline",
+  "effect": "+1.10 pp",
+  "p": 0.08894540188992323,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "numpy, lowo: dilate_k3_i1 vs baseline",
+  "effect": "+1.31 pp",
+  "p": 0.061676343035056765,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: aug_stroke_width vs baseline",
+  "effect": "-3.07 pp",
+  "p": 0.010799397638812196,
+  "confirmatory": false,
+  "p_holm": 0.8099548229109147
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: dilate_k2_i1 vs baseline",
+  "effect": "+0.04 pp",
+  "p": 0.9394401503962885,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: dilate_k2_i1_gain_1.5 vs baseline",
+  "effect": "+0.92 pp",
+  "p": 0.03140573843404384,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: dilate_k2_i2 vs baseline",
+  "effect": "+0.59 pp",
+  "p": 0.18286952846216442,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: dilate_k3_i1 vs baseline",
+  "effect": "+0.81 pp",
+  "p": 0.07431713693344026,
+  "confirmatory": true
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: dilate_k3_i2 vs baseline",
+  "effect": "-2.11 pp",
+  "p": 0.01816260823549344,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: dilate_k5_i1 vs baseline",
+  "effect": "-2.11 pp",
+  "p": 0.01816260823549344,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: erode_k2_i1 vs baseline",
+  "effect": "-14.25 pp",
+  "p": 0.00019790241123405545,
+  "confirmatory": false,
+  "p_holm": 0.02869584962893804
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: gain_0.7 vs baseline",
+  "effect": "-0.82 pp",
+  "p": 0.09995279491049351,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: gain_1.5 vs baseline",
+  "effect": "+0.32 pp",
+  "p": 0.3936603041038055,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, lowo: gain_2.0 vs baseline",
+  "effect": "+0.43 pp",
+  "p": 0.3850687355282936,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "numpy, mnist_to_stylus: dilate_k2_i1 vs baseline",
+  "effect": "-0.74 pp",
+  "p": 0.6342729519568759,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "numpy, mnist_to_stylus: dilate_k3_i1 vs baseline",
+  "effect": "+3.43 pp",
+  "p": 0.08502196505007427,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: aug_stroke_width vs baseline",
+  "effect": "+1.38 pp",
+  "p": 0.4867357374740543,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: dilate_k2_i1 vs baseline",
+  "effect": "-5.01 pp",
+  "p": 0.0008209554835701011,
+  "confirmatory": false,
+  "p_holm": 0.09440988061056163
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: dilate_k2_i1_gain_1.5 vs baseline",
+  "effect": "-4.94 pp",
+  "p": 0.00045479513147567266,
+  "confirmatory": false,
+  "p_holm": 0.05948409044062822
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: dilate_k2_i2 vs baseline",
+  "effect": "-15.29 pp",
+  "p": 2.269218913934495e-05,
+  "confirmatory": false,
+  "p_holm": 0.003676134640573882
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: dilate_k3_i1 vs baseline",
+  "effect": "-2.36 pp",
+  "p": 0.002196996455172669,
+  "confirmatory": false,
+  "p_holm": 0.21969964551726692
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: dilate_k3_i2 vs baseline",
+  "effect": "-17.68 pp",
+  "p": 6.0788510832448764e-05,
+  "confirmatory": false,
+  "p_holm": 0.00942221917902956
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: dilate_k5_i1 vs baseline",
+  "effect": "-17.68 pp",
+  "p": 6.0788510832448764e-05,
+  "confirmatory": false,
+  "p_holm": 0.00942221917902956
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: erode_k2_i1 vs baseline",
+  "effect": "-59.84 pp",
+  "p": 1.2795819643581395e-06,
+  "confirmatory": false,
+  "p_holm": 0.00023160433554882324
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: gain_0.7 vs baseline",
+  "effect": "-0.64 pp",
+  "p": 0.2275277318197318,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: gain_1.5 vs baseline",
+  "effect": "+0.54 pp",
+  "p": 0.1344299620055572,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, mnist_to_stylus: gain_2.0 vs baseline",
+  "effect": "+0.44 pp",
+  "p": 0.3875305066011594,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: aug_stroke_width vs baseline",
+  "effect": "-1.83 pp",
+  "p": 0.008927696052162733,
+  "confirmatory": false,
+  "p_holm": 0.7084705308340494
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: dilate_k2_i1 vs baseline",
+  "effect": "+0.17 pp",
+  "p": 0.3461186337362046,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: dilate_k2_i1_gain_1.5 vs baseline",
+  "effect": "+0.39 pp",
+  "p": 0.06574284815086986,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: dilate_k2_i2 vs baseline",
+  "effect": "+0.18 pp",
+  "p": 0.5494664940611277,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: dilate_k3_i1 vs baseline",
+  "effect": "+0.18 pp",
+  "p": 0.47426432147489983,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: dilate_k3_i2 vs baseline",
+  "effect": "-0.90 pp",
+  "p": 0.055662573949708964,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: dilate_k5_i1 vs baseline",
+  "effect": "-0.90 pp",
+  "p": 0.055662573949708964,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: erode_k2_i1 vs baseline",
+  "effect": "-8.43 pp",
+  "p": 1.0732433037077958e-06,
+  "confirmatory": false,
+  "p_holm": 0.00019533028127481883
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: gain_0.7 vs baseline",
+  "effect": "-0.45 pp",
+  "p": 0.0204758744209097,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: gain_1.5 vs baseline",
+  "effect": "+0.07 pp",
+  "p": 0.8247635884761351,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Dilation study",
+  "test": "torch, sample_split: gain_2.0 vs baseline",
+  "effect": "+0.28 pp",
+  "p": 0.10608282922155463,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "diversity (full data) k=4 vs k=1: unseen_acc",
+  "effect": "+17.9 pp",
+  "p": 4.998721039292104e-05,
+  "confirmatory": false,
+  "p_holm": 0.007897979242081524
+ },
+ {
+  "family": "Regimes",
+  "test": "diversity (full data) k=4 vs k=1: writer_bias",
+  "effect": "-22.8 pp",
+  "p": 9.643563833792863e-06,
+  "confirmatory": false,
+  "p_holm": 0.0016297622879109938
+ },
+ {
+  "family": "Regimes",
+  "test": "diversity (full data) k=4 vs k=1: gap_acc",
+  "effect": "+0.303 pp",
+  "p": 0.2992790442909764,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "diversity (full data) k=4 vs k=1: cross_gap",
+  "effect": "-17.3 pp",
+  "p": 5.379253334881042e-05,
+  "confirmatory": false,
+  "p_holm": 0.008445427735763235
+ },
+ {
+  "family": "Regimes",
+  "test": "diversity (size-matched) k=4 vs k=1: unseen_acc",
+  "effect": "+12.3 pp",
+  "p": 0.00017148573184764678,
+  "confirmatory": true
+ },
+ {
+  "family": "Regimes",
+  "test": "diversity (size-matched) k=4 vs k=1: writer_bias",
+  "effect": "-18.3 pp",
+  "p": 4.91459779433111e-05,
+  "confirmatory": true
+ },
+ {
+  "family": "Regimes",
+  "test": "diversity (size-matched) k=4 vs k=1: gap_acc",
+  "effect": "+0.571 pp",
+  "p": 0.029762815153046306,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "diversity (size-matched) k=4 vs k=1: cross_gap",
+  "effect": "-16.6 pp",
+  "p": 0.00012663007555844549,
+  "confirmatory": false,
+  "p_holm": 0.018867881258208378
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (5 epochs) R3 k=3 100% vs 10%: gap_acc",
+  "effect": "-1.09 pp",
+  "p": 0.10415281809177074,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (5 epochs) R3 k=3 100% vs 10%: gap_loss",
+  "effect": "+0.0296 nats",
+  "p": 0.05439944632420423,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (5 epochs) R3 k=3 100% vs 10%: writer_bias",
+  "effect": "-4.48 pp",
+  "p": 0.000717012849794239,
+  "confirmatory": false,
+  "p_holm": 0.08675855482510292
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (5 epochs) R3 k=3 100% vs 10%: seen_acc",
+  "effect": "+34.9 pp",
+  "p": 5.762066190745153e-05,
+  "confirmatory": false,
+  "p_holm": 0.008988823257562438
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (5 epochs) R4 100% vs 10%: gap_acc",
+  "effect": "-1.03 pp",
+  "p": 0.3036632999298125,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (5 epochs) R4 100% vs 10%: gap_loss",
+  "effect": "-0.0232 nats",
+  "p": 0.0619561688931954,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (5 epochs) R4 100% vs 10%: writer_bias",
+  "effect": "-8.32 pp",
+  "p": 0.005647368342416073,
+  "confirmatory": false,
+  "p_holm": 0.4743789407629501
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (5 epochs) R4 100% vs 10%: seen_acc",
+  "effect": "+14.6 pp",
+  "p": 0.00037623339423365247,
+  "confirmatory": false,
+  "p_holm": 0.05079150822154308
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (equal steps) R3 k=3 100% vs 10%: gap_acc",
+  "effect": "-5.43 pp",
+  "p": 1.9438578746451522e-05,
+  "confirmatory": false,
+  "p_holm": 0.0031879269144180497
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (equal steps) R3 k=3 100% vs 10%: gap_loss",
+  "effect": "-0.32 nats",
+  "p": 0.00020099238489820718,
+  "confirmatory": false,
+  "p_holm": 0.028942903425341834
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (equal steps) R3 k=3 100% vs 10%: writer_bias",
+  "effect": "-3.36 pp",
+  "p": 0.0120660572348766,
+  "confirmatory": false,
+  "p_holm": 0.8808221781459918
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (equal steps) R3 k=3 100% vs 10%: seen_acc",
+  "effect": "+3.17 pp",
+  "p": 0.0005092317222149286,
+  "confirmatory": false,
+  "p_holm": 0.06518166044351086
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (equal steps) R4 100% vs 10%: gap_acc",
+  "effect": "-4.78 pp",
+  "p": 2.174386424637918e-05,
+  "confirmatory": false,
+  "p_holm": 0.0035442498721598064
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (equal steps) R4 100% vs 10%: gap_loss",
+  "effect": "-0.414 nats",
+  "p": 0.00016630588951649215,
+  "confirmatory": false,
+  "p_holm": 0.024555368671134323
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (equal steps) R4 100% vs 10%: writer_bias",
+  "effect": "-2.45 pp",
+  "p": 0.058366127328881294,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "size sweep (equal steps) R4 100% vs 10%: seen_acc",
+  "effect": "+2.28 pp",
+  "p": 0.0008363722795091262,
+  "confirmatory": false,
+  "p_holm": 0.09534643986404039
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 (1 writer) vs R2: unseen_acc",
+  "effect": "+25 pp",
+  "p": 7.819026094919268e-06,
+  "confirmatory": false,
+  "p_holm": 0.0013605105405159526
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 (1 writer) vs R2: mnist_acc",
+  "effect": "+64.2 pp",
+  "p": 4.777305715171106e-07,
+  "confirmatory": false,
+  "p_holm": 8.742469458763124e-05
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 (1 writer) vs R2: writer_bias",
+  "effect": "-25.1 pp",
+  "p": 1.728592568491766e-05,
+  "confirmatory": false,
+  "p_holm": 0.0028694636636963314
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 (3 writers) vs R3 k=3: unseen_acc",
+  "effect": "+11 pp",
+  "p": 5.100394775625737e-06,
+  "confirmatory": false,
+  "p_holm": 0.0008976694805101297
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 (3 writers) vs R3 k=3: mnist_acc",
+  "effect": "+54.3 pp",
+  "p": 4.505665263892199e-07,
+  "confirmatory": false,
+  "p_holm": 8.290424085561646e-05
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 (3 writers) vs R3 k=3: writer_bias",
+  "effect": "-11.1 pp",
+  "p": 2.479801440634434e-07,
+  "confirmatory": false,
+  "p_holm": 4.587632665173703e-05
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R1: unseen_acc",
+  "effect": "-2.55 pp",
+  "p": 0.0027378657295014336,
+  "confirmatory": false,
+  "p_holm": 0.2600972443026362
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R1: unseen_acc",
+  "effect": "+8.1 pp",
+  "p": 0.00036344152422467473,
+  "confirmatory": false,
+  "p_holm": 0.04965575928796609
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R1: unseen_acc",
+  "effect": "+3.59 pp",
+  "p": 0.013263791271631487,
+  "confirmatory": false,
+  "p_holm": 0.9417291802858355
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R2: unseen_acc",
+  "effect": "-0.72 pp",
+  "p": 0.1819142029670045,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R2: unseen_acc",
+  "effect": "+1.5 pp",
+  "p": 0.015052918065679552,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R2: unseen_acc",
+  "effect": "+1.91 pp",
+  "p": 0.016350702274553815,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R3 k=2: unseen_acc",
+  "effect": "+0.117 pp",
+  "p": 0.8607438421778969,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R3 k=2: unseen_acc",
+  "effect": "+2.71 pp",
+  "p": 0.0005513748928359447,
+  "confirmatory": false,
+  "p_holm": 0.06892186160449308
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R3 k=2: unseen_acc",
+  "effect": "+3.18 pp",
+  "p": 0.002231410844632014,
+  "confirmatory": false,
+  "p_holm": 0.2209096736185694
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R3 k=3: unseen_acc",
+  "effect": "+0.92 pp",
+  "p": 0.027835672448643038,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R3 k=3: unseen_acc",
+  "effect": "+2.21 pp",
+  "p": 7.556679211429996e-05,
+  "confirmatory": false,
+  "p_holm": 0.011561719193487894
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R3 k=3: unseen_acc",
+  "effect": "+2.7 pp",
+  "p": 0.0023189900295160076,
+  "confirmatory": false,
+  "p_holm": 0.22726102289256875
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R3 k=4: unseen_acc",
+  "effect": "+1.03 pp",
+  "p": 0.03208026914325575,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R3 k=4: unseen_acc",
+  "effect": "+1.89 pp",
+  "p": 0.009258630258941148,
+  "confirmatory": false,
+  "p_holm": 0.7221731601974096
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R3 k=4: unseen_acc",
+  "effect": "+2.41 pp",
+  "p": 0.022579133316927565,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R4: mnist_acc",
+  "effect": "+11.2 pp",
+  "p": 0.0067944572910563755,
+  "confirmatory": false,
+  "p_holm": 0.5534027571779284
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R4: mnist_acc",
+  "effect": "+16 pp",
+  "p": 0.0007408856170292801,
+  "confirmatory": false,
+  "p_holm": 0.08890627404351362
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R4: mnist_acc",
+  "effect": "+22.3 pp",
+  "p": 9.555024342589575e-05,
+  "confirmatory": false,
+  "p_holm": 0.01442808675731026
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R3s k=2: unseen_acc",
+  "effect": "+0.168 pp",
+  "p": 0.734886044144895,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R3s k=3: unseen_acc",
+  "effect": "-0.762 pp",
+  "p": 0.1990559938798741,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R3s k=4: unseen_acc",
+  "effect": "+0.476 pp",
+  "p": 0.34987605049790643,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R5 (1 writer): unseen_acc",
+  "effect": "-1.33 pp",
+  "p": 0.0010661820383392954,
+  "confirmatory": false,
+  "p_holm": 0.1162138421789832
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R5 (3 writers): unseen_acc",
+  "effect": "-0.874 pp",
+  "p": 0.0007786261683967378,
+  "confirmatory": false,
+  "p_holm": 0.09187788787081506
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R1m n=1712: unseen_acc",
+  "effect": "-1.26 pp",
+  "p": 0.553693840909462,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R1m n=1712: unseen_acc",
+  "effect": "+20.5 pp",
+  "p": 1.8803013574087312e-05,
+  "confirmatory": false,
+  "p_holm": 0.0031024972397244066
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R1m n=1712: unseen_acc",
+  "effect": "+16.7 pp",
+  "p": 0.0003177335594393435,
+  "confirmatory": false,
+  "p_holm": 0.0438472312026294
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R1m n=3424: unseen_acc",
+  "effect": "-2.66 pp",
+  "p": 0.3334424860612445,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R1m n=3424: unseen_acc",
+  "effect": "+19.5 pp",
+  "p": 3.0179559066649742e-05,
+  "confirmatory": false,
+  "p_holm": 0.0048589090097306085
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R1m n=3424: unseen_acc",
+  "effect": "+11.8 pp",
+  "p": 0.001218847428406333,
+  "confirmatory": false,
+  "p_holm": 0.13041667483947764
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R1m n=5136: unseen_acc",
+  "effect": "-1.51 pp",
+  "p": 0.49339532396163105,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R1m n=5136: unseen_acc",
+  "effect": "+16.4 pp",
+  "p": 0.0001122521956971092,
+  "confirmatory": false,
+  "p_holm": 0.016837829354566382
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R1m n=5136: unseen_acc",
+  "effect": "+11 pp",
+  "p": 0.008855881635425618,
+  "confirmatory": false,
+  "p_holm": 0.7084705308340494
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R1m n=6848: unseen_acc",
+  "effect": "-1.52 pp",
+  "p": 0.03609713973419443,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R1m n=6848: unseen_acc",
+  "effect": "+17.5 pp",
+  "p": 3.762570784694521e-05,
+  "confirmatory": false,
+  "p_holm": 0.005982487547664288
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R1m n=6848: unseen_acc",
+  "effect": "+12.9 pp",
+  "p": 0.0005193641548081581,
+  "confirmatory": false,
+  "p_holm": 0.0659313603277114
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R2: mnist_acc",
+  "effect": "+4.8 pp",
+  "p": 0.01738412002367184,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R2: mnist_acc",
+  "effect": "+8.23 pp",
+  "p": 0.0003094141802395467,
+  "confirmatory": false,
+  "p_holm": 0.04300857105329699
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R2: mnist_acc",
+  "effect": "+11.7 pp",
+  "p": 0.00036245079772238023,
+  "confirmatory": false,
+  "p_holm": 0.04965575928796609
+ },
+ {
+  "family": "Regimes",
+  "test": "arm dilate_k3_i1 vs baseline, R3 k=3: mnist_acc",
+  "effect": "+10.7 pp",
+  "p": 0.003315593933791775,
+  "confirmatory": false,
+  "p_holm": 0.295087860107468
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist vs baseline, R3 k=3: mnist_acc",
+  "effect": "+11.7 pp",
+  "p": 0.0005191445695095385,
+  "confirmatory": false,
+  "p_holm": 0.0659313603277114
+ },
+ {
+  "family": "Regimes",
+  "test": "arm norm_mnist_dilate_k3_i1 vs baseline, R3 k=3: mnist_acc",
+  "effect": "+19.6 pp",
+  "p": 0.0003851444021589406,
+  "confirmatory": false,
+  "p_holm": 0.051609349889298044
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d70.1 5 ep: forgetting > 0",
+  "effect": "+0.268 pp",
+  "p": 0.033656097150328405,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d70.1 15 ep: unseen gain vs R2",
+  "effect": "+24.8 pp",
+  "p": 8.108469284098946e-06,
+  "confirmatory": false,
+  "p_holm": 0.0013946567168650187
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d70.1 15 ep: forgetting > 0",
+  "effect": "+0.879 pp",
+  "p": 0.005251732998724345,
+  "confirmatory": false,
+  "p_holm": 0.456900770889018
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d70.3 5 ep: unseen gain vs R2",
+  "effect": "+24.8 pp",
+  "p": 8.77657777063148e-06,
+  "confirmatory": false,
+  "p_holm": 0.0015007947987779832
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d70.3 5 ep: forgetting > 0",
+  "effect": "+0.985 pp",
+  "p": 0.002430985961503168,
+  "confirmatory": false,
+  "p_holm": 0.2358056382658073
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d70.3 15 ep: unseen gain vs R2",
+  "effect": "+24.1 pp",
+  "p": 9.888772445903621e-06,
+  "confirmatory": false,
+  "p_holm": 0.0016613137709118083
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d70.3 15 ep: forgetting > 0",
+  "effect": "+2.84 pp",
+  "p": 0.00025584424302761076,
+  "confirmatory": false,
+  "p_holm": 0.036074038266893114
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d71 5 ep: unseen gain vs R2",
+  "effect": "+23.7 pp",
+  "p": 1.4247923235963163e-05,
+  "confirmatory": false,
+  "p_holm": 0.0023794031804058482
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d71 5 ep: forgetting > 0",
+  "effect": "+4.01 pp",
+  "p": 0.00017482678266665696,
+  "confirmatory": false,
+  "p_holm": 0.025524710269331917
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d71 15 ep: unseen gain vs R2",
+  "effect": "+23.5 pp",
+  "p": 8.903577349926457e-06,
+  "confirmatory": false,
+  "p_holm": 0.0015136081494874977
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 1 writer lr\u00d71 15 ep: forgetting > 0",
+  "effect": "+5.29 pp",
+  "p": 0.00016591465318334001,
+  "confirmatory": false,
+  "p_holm": 0.024555368671134323
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d70.1 5 ep: forgetting > 0",
+  "effect": "+0.344 pp",
+  "p": 0.021832841317985574,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d70.1 15 ep: unseen gain vs R3 k=3",
+  "effect": "+10.8 pp",
+  "p": 3.65012316646276e-06,
+  "confirmatory": false,
+  "p_holm": 0.0006570221699632967
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d70.1 15 ep: forgetting > 0",
+  "effect": "+2.14 pp",
+  "p": 0.0012599105663104954,
+  "confirmatory": false,
+  "p_holm": 0.13355052002891252
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d70.3 5 ep: unseen gain vs R3 k=3",
+  "effect": "+10.8 pp",
+  "p": 4.974293323977081e-06,
+  "confirmatory": false,
+  "p_holm": 0.0008804499183439433
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d70.3 5 ep: forgetting > 0",
+  "effect": "+2.02 pp",
+  "p": 0.0015768701331756402,
+  "confirmatory": false,
+  "p_holm": 0.1608407535839153
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d70.3 15 ep: unseen gain vs R3 k=3",
+  "effect": "+10.3 pp",
+  "p": 7.853772334110932e-06,
+  "confirmatory": false,
+  "p_holm": 0.0013605105405159526
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d70.3 15 ep: forgetting > 0",
+  "effect": "+5.38 pp",
+  "p": 8.115890447634302e-05,
+  "confirmatory": false,
+  "p_holm": 0.012336153480404139
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d71 5 ep: unseen gain vs R3 k=3",
+  "effect": "+10.1 pp",
+  "p": 5.795969956379359e-06,
+  "confirmatory": false,
+  "p_holm": 0.0010142947423663878
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d71 5 ep: forgetting > 0",
+  "effect": "+6.82 pp",
+  "p": 0.00023849095064662105,
+  "confirmatory": false,
+  "p_holm": 0.03395260387775761
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d71 15 ep: unseen gain vs R3 k=3",
+  "effect": "+10 pp",
+  "p": 3.190117396083558e-05,
+  "confirmatory": false,
+  "p_holm": 0.005104187833733693
+ },
+ {
+  "family": "Regimes",
+  "test": "R5 sweep 3 writers lr\u00d71 15 ep: forgetting > 0",
+  "effect": "+8.8 pp",
+  "p": 4.306064076810245e-06,
+  "confirmatory": false,
+  "p_holm": 0.0007664794056722237
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: norm_train vs baseline",
+  "effect": "+18.50 pp",
+  "p": 0.0010240863863455573,
+  "confirmatory": false,
+  "p_holm": 0.11469767527070242
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: norm_dil_train vs baseline",
+  "effect": "+22.28 pp",
+  "p": 0.0010411900815863028,
+  "confirmatory": false,
+  "p_holm": 0.11557209905607961
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth vs baseline",
+  "effect": "+19.59 pp",
+  "p": 0.0008081525283287126,
+  "confirmatory": false,
+  "p_holm": 0.09374569328613067
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_dil vs baseline",
+  "effect": "+23.85 pp",
+  "p": 0.0007697856915054468,
+  "confirmatory": false,
+  "p_holm": 0.09160449728914817
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_rdil vs baseline",
+  "effect": "+25.48 pp",
+  "p": 0.0027839675702133098,
+  "confirmatory": false,
+  "p_holm": 0.26073894748615
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_dil_affine vs baseline",
+  "effect": "+34.73 pp",
+  "p": 0.00021282600273068173,
+  "confirmatory": true
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_dil_elastic vs baseline",
+  "effect": "+33.94 pp",
+  "p": 0.00045407702626433754,
+  "confirmatory": false,
+  "p_holm": 0.05948409044062822
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_dil_noise vs baseline",
+  "effect": "+23.46 pp",
+  "p": 0.0012880435719163144,
+  "confirmatory": false,
+  "p_holm": 0.135244575051213
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_dil_blur vs baseline",
+  "effect": "+23.20 pp",
+  "p": 0.000692142171463683,
+  "confirmatory": false,
+  "p_holm": 0.085133487090033
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_deslant_dil vs baseline",
+  "effect": "+28.63 pp",
+  "p": 0.0004050390468964153,
+  "confirmatory": false,
+  "p_holm": 0.05387019323722323
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_dil_affine_elastic vs baseline",
+  "effect": "+34.43 pp",
+  "p": 0.0004799467421394695,
+  "confirmatory": false,
+  "p_holm": 0.061913129735991564
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_dil_affine_noise_blur vs baseline",
+  "effect": "+32.99 pp",
+  "p": 0.00028276651659812045,
+  "confirmatory": false,
+  "p_holm": 0.03958731232373686
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_deslant_dil_affine vs baseline",
+  "effect": "+34.49 pp",
+  "p": 0.0009309628457865318,
+  "confirmatory": false,
+  "p_holm": 0.10519880157387809
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: normboth_rdil_affine vs baseline",
+  "effect": "+36.29 pp",
+  "p": 0.0004200571633218125,
+  "confirmatory": false,
+  "p_holm": 0.05544754555847925
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: f_center vs baseline",
+  "effect": "+16.57 pp",
+  "p": 0.0030354947187614285,
+  "confirmatory": false,
+  "p_holm": 0.27741538262487925
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: f_aspect vs baseline",
+  "effect": "+2.89 pp",
+  "p": 0.30578933647147116,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: f_slant vs baseline",
+  "effect": "-0.76 pp",
+  "p": 0.8003954637419065,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: f_width vs baseline",
+  "effect": "+12.69 pp",
+  "p": 0.02604465525051651,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: f_intensity vs baseline",
+  "effect": "-0.28 pp",
+  "p": 0.7859505213077553,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: f_soft vs baseline",
+  "effect": "+5.42 pp",
+  "p": 0.03061549858612095,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: c2_center_aspect vs baseline",
+  "effect": "+20.30 pp",
+  "p": 0.0013056442487780224,
+  "confirmatory": false,
+  "p_holm": 0.13578700187291431
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: c3_+slant vs baseline",
+  "effect": "+22.17 pp",
+  "p": 0.0010490542738143807,
+  "confirmatory": false,
+  "p_holm": 0.11557209905607961
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: c4_+width vs baseline",
+  "effect": "+24.42 pp",
+  "p": 0.00312507668282346,
+  "confirmatory": false,
+  "p_holm": 0.2812569014541114
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: c5_+intensity vs baseline",
+  "effect": "+23.77 pp",
+  "p": 0.0007932189816067505,
+  "confirmatory": false,
+  "p_holm": 0.09280662084798981
+ },
+ {
+  "family": "Domain gap",
+  "test": "s2m: c6_+soft vs baseline",
+  "effect": "+22.19 pp",
+  "p": 0.0017867738322943623,
+  "confirmatory": false,
+  "p_holm": 0.18046415706173058
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth vs baseline",
+  "effect": "+9.61 pp",
+  "p": 0.006748814111925956,
+  "confirmatory": false,
+  "p_holm": 0.5534027571779284
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_testdil vs baseline",
+  "effect": "+6.17 pp",
+  "p": 0.02022625516983504,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_testdil2 vs baseline",
+  "effect": "+8.62 pp",
+  "p": 0.016056597888918216,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_rerode vs baseline",
+  "effect": "+9.45 pp",
+  "p": 0.009858167883837067,
+  "confirmatory": false,
+  "p_holm": 0.7492207591716171
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_contrast_hard vs baseline",
+  "effect": "+11.38 pp",
+  "p": 0.004639972433828686,
+  "confirmatory": false,
+  "p_holm": 0.4083175741769243
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_affine vs baseline",
+  "effect": "+9.05 pp",
+  "p": 0.005326868228021337,
+  "confirmatory": false,
+  "p_holm": 0.458110667609835
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_elastic vs baseline",
+  "effect": "+5.51 pp",
+  "p": 0.05502440283737861,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_noise vs baseline",
+  "effect": "+10.13 pp",
+  "p": 0.005561932545156363,
+  "confirmatory": false,
+  "p_holm": 0.4727642663382909
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_deslant vs baseline",
+  "effect": "+10.27 pp",
+  "p": 0.0014228269711749947,
+  "confirmatory": true
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_affine_erode_contrast vs baseline",
+  "effect": "+8.49 pp",
+  "p": 0.009675181302216673,
+  "confirmatory": false,
+  "p_holm": 0.7449889602706838
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_testdil_affine vs baseline",
+  "effect": "+6.27 pp",
+  "p": 0.012481022480315166,
+  "confirmatory": false,
+  "p_holm": 0.898633618582692
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_testdil_affine_elastic vs baseline",
+  "effect": "+2.01 pp",
+  "p": 0.44118694413457693,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "m2s: normboth_deslant_testdil_affine vs baseline",
+  "effect": "+3.33 pp",
+  "p": 0.054473201657292275,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "reverse degradation: thin vs clean (R1 models)",
+  "effect": "-3.70 pp",
+  "p": 0.0030153845937486877,
+  "confirmatory": false,
+  "p_holm": 0.27741538262487925
+ },
+ {
+  "family": "Domain gap",
+  "test": "reverse degradation: hard vs clean (R1 models)",
+  "effect": "-0.22 pp",
+  "p": 0.011599602486692076,
+  "confirmatory": false,
+  "p_holm": 0.8583705840152136
+ },
+ {
+  "family": "Domain gap",
+  "test": "reverse degradation: dim vs clean (R1 models)",
+  "effect": "-0.02 pp",
+  "p": 0.4347797895192728,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "reverse degradation: uncenter vs clean (R1 models)",
+  "effect": "-8.29 pp",
+  "p": 0.00023743079634795528,
+  "confirmatory": false,
+  "p_holm": 0.03395260387775761
+ },
+ {
+  "family": "Domain gap",
+  "test": "reverse degradation: narrow vs clean (R1 models)",
+  "effect": "-2.77 pp",
+  "p": 0.0005770211981264032,
+  "confirmatory": false,
+  "p_holm": 0.071550628567674
+ },
+ {
+  "family": "Domain gap",
+  "test": "reverse degradation: upright vs clean (R1 models)",
+  "effect": "+0.02 pp",
+  "p": 0.6117550757431224,
+  "confirmatory": false,
+  "p_holm": 1.0
+ },
+ {
+  "family": "Domain gap",
+  "test": "reverse degradation: all vs clean (R1 models)",
+  "effect": "-20.50 pp",
+  "p": 4.185137278168477e-06,
+  "confirmatory": false,
+  "p_holm": 0.0007491395727921575
+ }
+]

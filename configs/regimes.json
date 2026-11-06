@@ -1,8 +1,8 @@
 {
   "description": "Five training regimes from the team's proposal (R1-R5). Arms and analysis plan fixed on 2026-11-05 before any regime run.",
   "results_dir": "results/regimes",
-  "workers": 4,
-  "threads_per_worker": 4,
+  "workers": 12,
+  "threads_per_worker": 1,
   "seeds": [
     0,
     1,
@@ -69,7 +69,9 @@
     "core_hypothesis": "Under a fixed CNN, more writer diversity in training improves accuracy on unseen writers and lowers WriterBias.",
     "test": "Unseen-writer accuracy and WriterBias (max-min over the 5 writers' held-out splits) as a function of k = number of training writers (1..4), in the full-data series (R2, R3) and in the size-matched series (R3s, ~1712 training images for every k). Supported if unseen accuracy rises and WriterBias falls with k in the size-matched series (Spearman rho over seed-level means, and k=1 vs k=4 paired by seed).",
     "primary_arm": "baseline",
-    "rq2_size_sweep": "Added 2026-11-05 before any regime run: R3 (k=3) and R4 at 10/25/50/100% of each training writer's split, baseline arm; report gap (acc, loss) and WriterBias vs fraction."
+    "rq2_size_sweep": "Added 2026-11-05 before any regime run: R3 (k=3) and R4 at 10/25/50/100% of each training writer's split, baseline arm; report gap (acc, loss) and WriterBias vs fraction.",
+    "rq2_equal_steps": "Added 2026-11-05 after the first regime run, before these runs: the RQ2 size sweep repeated with epochs = round(5 / fraction) so each fraction gets the optimizer steps of the 100% run (R3fe, R4fe). Same metrics as rq2_size_sweep.",
+    "rq4_finetune_sweep": "Added 2026-11-05 before these runs: R5 fine-tuning with lr scale in {0.1, 0.3, 1.0} x epochs in {5, 15} (R5s; 0.1/5 is plain R5), baseline arm. Report MNIST forgetting vs unseen-writer gain over the scratch model."
   },
   "size_fractions": [
     0.1,
@@ -78,5 +80,30 @@
   ],
   "size_sweep_arms": [
     "baseline"
+  ],
+  "equal_steps_fractions": [
+    0.1,
+    0.25,
+    0.5
+  ],
+  "finetune_sweep": {
+    "lr_scales": [
+      0.1,
+      0.3,
+      1.0
+    ],
+    "epochs": [
+      5,
+      15
+    ]
+  },
+  "mnist_size_matched_k": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "amendments": [
+    "2026-11-06: added R1m (MNIST subsets of 1-4 writers worth of images, 5 seeds) after the main results, to test whether R1s advantage on unseen writers comes from MNIST writer diversity or its 35x size."
   ]
 }

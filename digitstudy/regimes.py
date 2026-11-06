@@ -47,7 +47,7 @@ def load_config(path: str | Path) -> dict[str, Any]:
 
 @dataclass(frozen=True)
 class Job:
-    regime: str  # R1 | R2 | R3 | R3s (size-matched) | R4 | R5
+    regime: str  # R1 | R1m (MNIST subset, size-matched) | R2 | R3 | R3s (size-matched) | R4 | R5
     seed: int
     train_writers: tuple[str, ...]  # empty for R1 (MNIST)
     train_arm: str  # preprocessing for stylus training data ("-" for R1)
@@ -55,12 +55,16 @@ class Job:
     per_writer_cap: int | None = None
     finetune: bool = False
     fraction: float | None = None  # size sweep: keep this share of each writer's train split
+    epochs: int | None = None  # override training.epochs (equal-steps sweep, R5 sweep)
+    lr_scale: float | None = None  # override finetune_lr_scale (R5 sweep)
 
     def key(self, eval_arm: str) -> str:
         tw = "+".join(self.train_writers) or "mnist"
         cap = self.per_writer_cap or "full"
         frac = f"|frac={self.fraction}" if self.fraction else ""
-        return f"{self.regime}|{eval_arm}|{tw}|cap={cap}{frac}|seed={self.seed}"
+        ep = f"|ep={self.epochs}" if self.epochs else ""
+        lr = f"|lr={self.lr_scale}" if self.lr_scale else ""
+        return f"{self.regime}|{eval_arm}|{tw}|cap={cap}{frac}{ep}{lr}|seed={self.seed}"
 
 
 # ------------------------------------------------------------------ data
@@ -129,6 +133,10 @@ def build_jobs(cfg) -> tuple[list[Job], list[Job]]:
                 for combo in itertools.combinations(writers, k):
                     p2.append(Job("R3", s, combo, arm, (arm,)))
             p2.append(Job("R4", s, tuple(writers), arm, (arm,)))
+        # Added 2026-11-06: MNIST subsets sized like k writers' training data (k = 1..4), to separate
+        # "MNIST has many writers" from "MNIST is 35x bigger" in the R1-vs-writer comparison.
+        for k in cfg.get("mnist_size_matched_k", []):
+            p2.append(Job("R1m", s, (), "-", tuple(arms), per_writer_cap=one_writer_cap * k))
         for arm in sub:
             for k in cfg.get("mixed_k", [2, 3, 4]):
                 for combo in itertools.combinations(writers, k):
@@ -138,6 +146,23 @@ def build_jobs(cfg) -> tuple[list[Job], list[Job]]:
                 p2.append(Job("R4f", s, tuple(writers), arm, (arm,), fraction=frac))
                 for combo in itertools.combinations(writers, 3):
                     p2.append(Job("R3f", s, combo, arm, (arm,), fraction=frac))
+        # RQ2 fix: same sweep, but epochs scaled so every fraction gets the optimizer steps of 100%
+        base_epochs = int(cfg["training"]["epochs"])
+        for frac in cfg.get("equal_steps_fractions", []):
+            ep = int(round(base_epochs / frac))
+            p2.append(Job("R4fe", s, tuple(writers), "baseline", ("baseline",), fraction=frac, epochs=ep))
+            for combo in itertools.combinations(writers, 3):
+                p2.append(Job("R3fe", s, combo, "baseline", ("baseline",), fraction=frac, epochs=ep))
+        # RQ4 fix: fine-tuning learning-rate x epochs sweep (the lr x0.1 / 5 epoch cell is plain R5)
+        sweep = cfg.get("finetune_sweep")
+        if sweep:
+            for lr_s in sweep["lr_scales"]:
+                for ep in sweep["epochs"]:
+                    if lr_s == float(cfg.get("finetune_lr_scale", 0.1)) and ep == base_epochs:
+                        continue
+                    combos = [(w,) for w in writers] + list(itertools.combinations(writers, cfg.get("finetune_k", 3)))
+                    for combo in combos:
+                        p2.append(Job("R5s", s, combo, "baseline", ("baseline",), finetune=True, epochs=ep, lr_scale=lr_s))
         for arm in r5_arms:
             for w in writers:
                 p2.append(Job("R5", s, (w,), arm, (arm,), finetune=True))
@@ -184,6 +209,10 @@ def run_job(cfg, job: Job) -> list[dict[str, Any]]:
     # --- training data
     if job.regime == "R1":
         x_tr, y_tr = _mnist(cfg, "train")
+    elif job.regime == "R1m":  # random MNIST subset of per_writer_cap images (a total cap here)
+        x_tr, y_tr = _mnist(cfg, "train")
+        idx = np.sort(np.random.default_rng(job.seed + 2000).permutation(len(y_tr))[: job.per_writer_cap])
+        x_tr, y_tr = x_tr[idx], y_tr[idx]
     else:
         aw = _arm_writers(cfg, job.train_arm)
         rng = np.random.default_rng(job.seed + 1000)
@@ -206,7 +235,7 @@ def run_job(cfg, job: Job) -> list[dict[str, Any]]:
     lr = float(tcfg["learning_rate"])
     if job.finetune:
         model.load_state_dict(torch.load(_model_path(cfg, job.seed), weights_only=True))
-        lr *= float(cfg.get("finetune_lr_scale", 0.1))
+        lr *= float(job.lr_scale or cfg.get("finetune_lr_scale", 0.1))
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     loss_fn = torch.nn.CrossEntropyLoss()
     x_t = torch.from_numpy(np.ascontiguousarray(x_tr, dtype=np.float32)).unsqueeze(1)
@@ -228,7 +257,10 @@ def run_job(cfg, job: Job) -> list[dict[str, Any]]:
 
     curve = [curve_point(0, float("nan"))] if job.finetune else []
     bs = int(tcfg["batch_size"])
-    for epoch in range(1, int(tcfg["epochs"]) + 1):
+    n_epochs = int(job.epochs or tcfg["epochs"])
+    # long equal-steps runs only record the final point (per-epoch evaluation would dominate the cost)
+    dense_curve = job.regime not in ("R3fe", "R4fe")
+    for epoch in range(1, n_epochs + 1):
         model.train()
         order = torch.from_numpy(rng.permutation(len(y_tr)))
         total = 0.0
@@ -239,7 +271,7 @@ def run_job(cfg, job: Job) -> list[dict[str, Any]]:
             loss.backward()
             opt.step()
             total += loss.item() * len(idx)
-        if job.regime != "R1":
+        if job.regime != "R1" and (dense_curve or epoch == n_epochs):
             curve.append(curve_point(epoch, total / len(y_tr)))
 
     if job.regime == "R1":
@@ -259,7 +291,7 @@ def run_job(cfg, job: Job) -> list[dict[str, Any]]:
         records.append({
             "run_key": job.key(arm), "regime": job.regime, "arm": arm, "seed": job.seed,
             "train_writers": list(job.train_writers), "per_writer_cap": job.per_writer_cap,
-            "fraction": job.fraction,
+            "fraction": job.fraction, "epochs": n_epochs, "lr_scale": job.lr_scale,
             "finetune": job.finetune, "n_train": int(len(y_tr)),
             "train_acc": train_eval["acc"], "train_loss": train_eval["loss"],
             "tests": tests, "curve": curve, "seconds": seconds,

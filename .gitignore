@@ -63,3 +63,16 @@ study.log
 results/regimes/models/
 study_c2m.log
 regimes.log
+results/domain_gap/cache/
+regimes2.log
+domain_select.log
+domain_final.log
+.venv-dml/
+regimes3.log
+domain_select2.log
+domain_final2.log
+domain_select3.log
+regimes4.log
+regimes_r1m.log
+nonstop.log
+run_nonstop.sh

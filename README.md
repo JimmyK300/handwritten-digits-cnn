@@ -8,10 +8,14 @@ It extends the team project [`ProfK602170/CustomDataCNN`](https://github.com/Pro
 
 All numbers are PyTorch CNN accuracy, mean ± std over 5 seeds, on held-out data.
 
-1. **Writer diversity drives cross-writer generalization** (regimes R1–R5, 1,205 runs). Going from 1 to 4 training writers raises unseen-writer accuracy from 67.8 ± 2.2% to 85.7 ± 1.4%, and lowers WriterBias (max − min accuracy across writers) from 37.6 to 14.8 pp. With the total training size fixed at one writer's worth, 4 writers still beat 1 by +12.3 ± 2.0 pp (p < 0.001).
-2. **MNIST pre-training plus fine-tuning is best.** It reaches 94.4 ± 0.4% on unseen writers and loses only 0.3 pp on MNIST, so there is no catastrophic forgetting.
-3. **Stylus → MNIST: dilation helps a lot in this direction.** Training on stylus digits gives 47.4% on MNIST. One 3×3 dilation pass on the training images (pre-registered) adds **+12.6 ± 8.0 pp** (+30% relative, p = 0.02). MNIST-style normalization plus dilation adds **+22.1 ± 5.2 pp**. Dilation also removes the class-8 over-prediction (8 goes from 35% of predictions to 5%).
-4. **Within stylus data, dilation barely matters** (under 1 pp for unseen writers, as below).
+1. **Writer diversity drives cross-writer generalization** (regimes R1–R5, 1,825 runs). Going from 1 to 4 training writers raises unseen-writer accuracy from 67.8 ± 2.2% to 85.7 ± 1.4%, and lowers WriterBias (max − min accuracy across writers) from 37.6 to 14.8 pp. With the total training size fixed at one writer's worth, 4 writers still beat 1 by +12.3 ± 2.0 pp (p < 0.001).
+2. **MNIST pre-training plus fine-tuning is best.** It reaches 94.4 ± 0.4% on unseen writers and loses only 0.3 pp on MNIST at lr × 0.1 for 5 epochs. Harder fine-tuning (lr × 1 or 15 epochs) forgets 5–9 pp of MNIST and does not help the writers.
+3. **MNIST's edge on the writers is size, not diversity.** At one writer's size (1,712 images), an MNIST-trained model gets only 44.6% on the writers, 23.2 pp below a single stylus writer. It needs all 60,000 images to reach 82.9%. (Added after the main results.)
+4. **The MNIST ↔ stylus gap is mostly geometry and stroke width.** Centre-of-mass position (+16.6 pp) and stroke width (+12.7 pp) matter; intensity and slant do not. Normalizing both domains, as MNIST was built, plus dilation and light affine jitter takes stylus → MNIST from 48.1% to **82.8 ± 2.1%** (confirmatory, p = 2e-4). MNIST → stylus goes from 80.9% to **91.1 ± 2.7%** (p = 0.001).
+5. **With equal training effort, less data means a larger generalization gap** (1.6 → 7.0 pp at 10% of the data, p < 1e-4); the flat gap in the fixed-epoch sweep was underfitting.
+6. **Within stylus data, dilation barely matters** (under 1 pp for unseen writers, as below).
+
+Multiple comparisons: 6 tests were pre-registered and are confirmatory; the other 185 are Holm-corrected together in [`results/HOLM.md`](results/HOLM.md) (50 survive).
 
 ![Writer diversity](results/regimes/figures/regimes_diversity.png)
 
@@ -106,8 +110,13 @@ python -m digitstudy smoke        # ~10 s end-to-end check (what CI runs)
 python -m digitstudy report            # rebuild dilation-study tables/figures from existing runs
 python -m digitstudy regimes           # regimes R1-R5 only
 python -m digitstudy regimes-report    # rebuild regime tables/figures
+python -m digitstudy.domain_gap select # domain gap: choose headline recipes on validation data
+python -m digitstudy.domain_gap final  # domain gap: test runs (seeds 0-4)
+python -m digitstudy domain-gap-report # results/domain_gap/DOMAIN_GAP.md
+python -m digitstudy holm              # results/HOLM.md: Holm correction over all exploratory tests
 pytest -q                         # unit tests, gradient checks, pipeline test
 ```
+Interrupted runs resume; see [`RESUME.md`](RESUME.md). `DIGITSTUDY_DEVICE=dml` trains the domain-gap runs on a DirectML GPU.
 
 Edit `configs/study.json` or `configs/regimes.json` to change seeds, conditions, regimes or worker count.
 

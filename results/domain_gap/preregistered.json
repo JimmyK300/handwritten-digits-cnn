@@ -1,0 +1,42 @@
+{
+  "analysis": "For each direction the headline recipe (chosen on validation data) is compared with the baseline on the test set over seeds 0-4 (paired t-test): this is the confirmatory test. All other recipe-vs-baseline comparisons are exploratory and Holm-corrected together.",
+  "headline_s2m": "normboth_dil_affine",
+  "headline_s2m_note": "Chosen automatically on 2026-11-06 as the best mean validation accuracy over selection seeds [100, 101, 102], before any final (test) run.",
+  "headline_m2s": "normboth_deslant",
+  "headline_m2s_note": "Chosen automatically on 2026-11-06 as the best mean validation accuracy over selection seeds [100, 101, 102], before any final (test) run.",
+  "selection_val_acc": {
+    "s2m": {
+      "normboth_dil_affine": 0.8088666666666667,
+      "normboth_deslant_dil_affine": 0.8088333333333333,
+      "normboth_rdil_affine": 0.8040666666666666,
+      "normboth_dil_elastic": 0.7904666666666667,
+      "normboth_dil_affine_noise_blur": 0.7817,
+      "normboth_dil_affine_elastic": 0.7816333333333333,
+      "normboth_deslant_dil": 0.7583000000000001,
+      "normboth_rdil": 0.7378666666666667,
+      "normboth_dil": 0.7071333333333333,
+      "normboth_dil_blur": 0.6858333333333334,
+      "normboth_dil_noise": 0.684,
+      "norm_dil_train": 0.6770999999999999,
+      "normboth": 0.6568,
+      "norm_train": 0.6368666666666667,
+      "baseline": 0.5119666666666667
+    },
+    "m2s": {
+      "normboth_deslant": 0.9243910031909097,
+      "normboth_noise": 0.9220951046774069,
+      "normboth_affine_erode_contrast": 0.9138843489765741,
+      "normboth": 0.9129115106233948,
+      "normboth_affine": 0.9128725970892676,
+      "normboth_contrast_hard": 0.9076970970503542,
+      "normboth_testdil_affine": 0.9045451007860534,
+      "normboth_rerode": 0.902599424079695,
+      "normboth_testdil2": 0.9019378939995332,
+      "normboth_deslant_testdil_affine": 0.8900303525566192,
+      "normboth_testdil": 0.8769943186240173,
+      "normboth_testdil_affine_elastic": 0.8713518561755779,
+      "normboth_elastic": 0.8470698108802241,
+      "baseline": 0.8229045061872519
+    }
+  }
+}

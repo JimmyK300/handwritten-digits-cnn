@@ -1,6 +1,6 @@
 # Regimes R1–R5
 
-Generated from `results/regimes/runs.jsonl` (1205 runs) with `configs/regimes.json`. All values are mean ± std over 5 seeds (each seed first averaged over writer combinations), in %, except gap loss (nats). Test sets: each writer's held-out split (286 images) and the MNIST test set (10,000). Definitions are in `digitstudy/regime_report.py`.
+Generated from `results/regimes/runs.jsonl` (1825 runs) with `configs/regimes.json`. All values are mean ± std over 5 seeds (each seed first averaged over writer combinations), in %, except gap loss (nats). Test sets: each writer's held-out split (286 images) and the MNIST test set (10,000). Definitions are in `digitstudy/regime_report.py`.
 
 ## 1. All regimes (baseline arm, no preprocessing)
 
@@ -17,6 +17,10 @@ Generated from `results/regimes/runs.jsonl` (1205 runs) with `configs/regimes.js
 | R3s k=4 | 1712 | 92.4 ± 1.2 | 90.5 ± 0.8 | 80.1 ± 1.9 | 42.6 ± 3.3 | 19.4 ± 1.9 | — | 1.8 ± 0.5 | 0.105 ± 0.023 | 10.4 ± 1.6 | 79.1 ± 2.2 |
 | R5 (1 writer) | 1713 | 97.4 ± 0.2 | 97.1 ± 0.3 | 92.8 ± 0.5 | 98.5 ± 0.3 | 12.5 ± 1.1 | 12.1 ± 1.1 | 0.3 ± 0.4 | 0.016 ± 0.004 | 4.3 ± 0.6 | 92.7 ± 0.5 |
 | R5 (3 writers) | 5140 | 97.8 ± 0.1 | 97.2 ± 0.1 | 94.4 ± 0.4 | 98.5 ± 0.3 | 9.1 ± 0.5 | 5.3 ± 0.5 | 0.6 ± 0.2 | 0.029 ± 0.006 | 2.8 ± 0.4 | 94.4 ± 0.4 |
+| R1m n=1712 | 1712 | 91.0 ± 2.8 | 89.4 ± 2.7 | 44.6 ± 4.1 | 89.4 ± 2.7 | 15.0 ± 3.7 | 15.0 ± 3.7 | 1.6 ± 0.8 | 0.057 ± 0.026 | — | 40.7 ± 4.4 |
+| R1m n=3424 | 3424 | 95.4 ± 1.7 | 94.1 ± 1.5 | 57.4 ± 3.4 | 94.1 ± 1.5 | 9.5 ± 2.5 | 9.5 ± 2.5 | 1.3 ± 0.3 | 0.042 ± 0.006 | — | 53.2 ± 3.2 |
+| R1m n=5136 | 5136 | 96.7 ± 0.9 | 95.5 ± 0.8 | 62.4 ± 6.4 | 95.5 ± 0.8 | 9.8 ± 1.9 | 9.8 ± 1.9 | 1.2 ± 0.5 | 0.032 ± 0.013 | — | 58.7 ± 6.5 |
+| R1m n=6848 | 6848 | 97.8 ± 0.3 | 96.8 ± 0.2 | 66.1 ± 3.4 | 96.8 ± 0.2 | 10.2 ± 1.9 | 10.2 ± 1.9 | 1.0 ± 0.2 | 0.029 ± 0.004 | — | 62.7 ± 4.6 |
 
 R1's seen held-out accuracy is MNIST test accuracy and its unseen-writer accuracy covers all 5 writers. R4 has no unseen writer. R3s caps the total training set at one writer's size (≈1712 images) for every k.
 
@@ -79,6 +83,10 @@ Unseen-writer accuracy (MNIST accuracy for the R4 row), Δ vs baseline paired by
 | R3s k=4 | 80.1 ± 1.9 | 80.5 ± 1.7 (+0.5, p=0.35) | — | — |
 | R5 (1 writer) | 92.8 ± 0.5 | 91.4 ± 0.4 (-1.3, p=0.00) | — | — |
 | R5 (3 writers) | 94.4 ± 0.4 | 93.6 ± 0.6 (-0.9, p=0.00) | — | — |
+| R1m n=1712 | 44.6 ± 4.1 | 43.3 ± 6.9 (-1.3, p=0.55) | 65.0 ± 3.3 (+20.5, p=0.00) | 61.2 ± 5.2 (+16.7, p=0.00) |
+| R1m n=3424 | 57.4 ± 3.4 | 54.8 ± 5.8 (-2.7, p=0.33) | 76.9 ± 2.4 (+19.5, p=0.00) | 69.2 ± 4.1 (+11.8, p=0.00) |
+| R1m n=5136 | 62.4 ± 6.4 | 60.9 ± 3.5 (-1.5, p=0.49) | 78.8 ± 6.9 (+16.4, p=0.00) | 73.5 ± 4.0 (+11.0, p=0.01) |
+| R1m n=6848 | 66.1 ± 3.4 | 64.6 ± 2.4 (-1.5, p=0.04) | 83.7 ± 2.2 (+17.5, p=0.00) | 79.0 ± 1.2 (+12.9, p=0.00) |
 
 MNIST accuracy for models trained on stylus data, by arm:
 
@@ -87,6 +95,28 @@ MNIST accuracy for models trained on stylus data, by arm:
 | R2 | 34.4 ± 2.4 | 39.2 ± 1.7 (+4.8, p=0.02) | 42.6 ± 1.3 (+8.2, p=0.00) | 46.0 ± 1.6 (+11.7, p=0.00) |
 | R3 k=3 | 44.1 ± 1.8 | 54.8 ± 2.3 (+10.7, p=0.00) | 55.8 ± 2.3 (+11.7, p=0.00) | 63.7 ± 2.8 (+19.6, p=0.00) |
 | R4 | 48.3 ± 3.3 | 59.5 ± 3.3 (+11.2, p=0.01) | 64.3 ± 3.3 (+16.0, p=0.00) | 70.7 ± 0.7 (+22.3, p=0.00) |
+
+## 2c. Size sweep with equal optimizer steps (RQ2 without the underfitting confound)
+
+Epochs = round(5 / share), so every row takes the optimizer steps of the 100% run.
+
+| Regime | Share | Train images | Epochs | Train acc | Gap acc (pp) | Gap loss | Seen held-out acc | Unseen-writer acc | WriterBias (5 writers) | MNIST acc |
+|---|---|---|---|---|---|---|---|---|---|---|
+| R3 k=3 | 10% | 513 | 50 | 99.1 ± 0.4 | 7.0 ± 0.4 | 0.405 ± 0.058 | 92.2 ± 0.7 | 78.6 ± 0.9 | 23.5 ± 1.6 | 43.5 ± 2.2 |
+| R3 k=3 | 25% | 1284 | 20 | 98.4 ± 0.5 | 4.2 ± 0.2 | 0.230 ± 0.013 | 94.2 ± 0.5 | 82.0 ± 1.1 | 21.2 ± 1.5 | 42.0 ± 2.9 |
+| R3 k=3 | 50% | 2570 | 10 | 97.2 ± 0.4 | 2.3 ± 0.4 | 0.128 ± 0.011 | 94.9 ± 0.2 | 83.0 ± 0.4 | 20.1 ± 0.8 | 43.5 ± 3.1 |
+| R3 k=3 | 100% | 5140 | 5 | 96.9 ± 0.3 | 1.6 ± 0.1 | 0.084 ± 0.005 | 95.3 ± 0.3 | 83.4 ± 0.8 | 20.1 ± 0.5 | 44.1 ± 1.8 |
+| R4 | 10% | 855 | 50 | 100.0 ± 0.1 | 6.1 ± 0.4 | 0.490 ± 0.077 | 93.8 ± 0.4 | — | 10.7 ± 1.1 | 45.4 ± 3.2 |
+| R4 | 25% | 2140 | 20 | 98.9 ± 0.4 | 4.1 ± 0.6 | 0.249 ± 0.020 | 94.8 ± 0.2 | — | 9.4 ± 1.4 | 44.1 ± 5.0 |
+| R4 | 50% | 4283 | 10 | 98.3 ± 0.3 | 2.2 ± 0.2 | 0.124 ± 0.020 | 96.1 ± 0.1 | — | 8.0 ± 0.8 | 44.6 ± 2.3 |
+| R4 | 100% | 8566 | 5 | 97.5 ± 0.4 | 1.3 ± 0.4 | 0.076 ± 0.011 | 96.1 ± 0.5 | — | 8.3 ± 1.3 | 48.3 ± 3.3 |
+
+- **R3 k=3, gap acc**: Spearman ρ(size, value) = -0.97 (p = 1.97e-12); 100% vs 10%: -5.43 ± 0.52 pp (paired t, p = 1.94e-05).
+- **R3 k=3, gap loss**: Spearman ρ(size, value) = -0.97 (p = 1.97e-12); 100% vs 10%: -0.32 ± 0.055 nats (paired t, p = 0.000201).
+- **R3 k=3, WriterBias**: Spearman ρ(size, value) = -0.66 (p = 0.00157); 100% vs 10%: -3.36 ± 1.7 pp (paired t, p = 0.0121).
+- **R4, gap acc**: Spearman ρ(size, value) = -0.97 (p = 1.97e-12); 100% vs 10%: -4.78 ± 0.47 pp (paired t, p = 2.17e-05).
+- **R4, gap loss**: Spearman ρ(size, value) = -0.97 (p = 1.97e-12); 100% vs 10%: -0.414 ± 0.068 nats (paired t, p = 0.000166).
+- **R4, WriterBias**: Spearman ρ(size, value) = -0.64 (p = 0.00231); 100% vs 10%: -2.45 ± 2.1 pp (paired t, p = 0.0584).
 
 ## 4. R5: MNIST pre-training + fine-tuning (lr × 0.1)
 
@@ -109,6 +139,25 @@ R1 reference (MNIST-trained, before fine-tuning): MNIST 98.8 ± 0.2, all-writer 
 - R5 (3 writers) vs R3 k=3 (baseline arm), unseen-writer acc: +11.0 ± 0.8 pp (p = 5.1e-06).
 - R5 (3 writers) vs R3 k=3 (baseline arm), MNIST acc: +54.3 ± 2.0 pp (p = 4.51e-07).
 - R5 (3 writers) vs R3 k=3 (baseline arm), WriterBias: -11.1 ± 0.4 pp (p = 2.48e-07).
+
+## 4b. R5 fine-tuning sweep: learning rate × epochs (baseline arm)
+
+Gain = unseen-writer accuracy minus the scratch model on the same data (R2 or R3), paired by seed. Forgetting = R1's MNIST accuracy minus the fine-tuned model's, same seed.
+
+| Data | lr scale | Epochs | Unseen-writer acc | Gain vs scratch (pp) | p (gain) | MNIST acc | Forgetting (pp) | p (forgetting > 0) |
+|---|---|---|---|---|---|---|---|---|
+| 1 writer | ×0.1 | 5 | 92.8 ± 0.5 | +25.0 ± 1.9 | 7.8e-06 | 98.5 ± 0.3 | 0.3 ± 0.2 | 0.034 |
+| 1 writer | ×0.1 | 15 | 92.6 ± 0.5 | +24.8 ± 1.9 | 8.1e-06 | 97.9 ± 0.5 | 0.9 ± 0.4 | 0.0053 |
+| 1 writer | ×0.3 | 5 | 92.6 ± 0.5 | +24.8 ± 1.9 | 8.8e-06 | 97.8 ± 0.4 | 1.0 ± 0.3 | 0.0024 |
+| 1 writer | ×0.3 | 15 | 91.9 ± 0.3 | +24.1 ± 1.9 | 9.9e-06 | 96.0 ± 0.7 | 2.8 ± 0.5 | 0.00026 |
+| 1 writer | ×1 | 5 | 91.5 ± 0.5 | +23.7 ± 2.1 | 1.4e-05 | 94.8 ± 0.8 | 4.0 ± 0.7 | 0.00017 |
+| 1 writer | ×1 | 15 | 91.3 ± 0.5 | +23.5 ± 1.8 | 8.9e-06 | 93.5 ± 1.0 | 5.3 ± 0.9 | 0.00017 |
+| 3 writers | ×0.1 | 5 | 94.4 ± 0.4 | +11.0 ± 0.8 | 5.1e-06 | 98.5 ± 0.3 | 0.3 ± 0.2 | 0.022 |
+| 3 writers | ×0.1 | 15 | 94.2 ± 0.3 | +10.8 ± 0.7 | 3.7e-06 | 96.7 ± 0.7 | 2.1 ± 0.6 | 0.0013 |
+| 3 writers | ×0.3 | 5 | 94.2 ± 0.4 | +10.8 ± 0.7 | 5e-06 | 96.8 ± 0.7 | 2.0 ± 0.6 | 0.0016 |
+| 3 writers | ×0.3 | 15 | 93.7 ± 0.2 | +10.3 ± 0.8 | 7.9e-06 | 93.4 ± 0.9 | 5.4 ± 0.7 | 8.1e-05 |
+| 3 writers | ×1 | 5 | 93.5 ± 0.5 | +10.1 ± 0.7 | 5.8e-06 | 92.0 ± 1.3 | 6.8 ± 1.2 | 0.00024 |
+| 3 writers | ×1 | 15 | 93.4 ± 0.3 | +10.0 ± 1.1 | 3.2e-05 | 90.0 ± 0.7 | 8.8 ± 0.6 | 4.3e-06 |
 
 ## 5. Per-class precision / recall / F1 (baseline arm, confusion matrices summed over seeds and combinations)
 
