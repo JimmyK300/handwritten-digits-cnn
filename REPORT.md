@@ -189,6 +189,26 @@ The figure for RQ1 is the overview figure above (R2 bars).
 - **Interpretation.** For the writers, data from the matching domain (tablet stylus) is worth far more per image than diverse data from another domain (scanned pen). Diversity evens out performance across writers, but domain match is what raises accuracy. MNIST's lead over a single writer in the main table comes from its size. Normalizing the stylus test images to MNIST style raises the 1,712-image MNIST model from 44.6% to 65.0% (+20.5 pp; REGIMES.md §3), so much of the gap is the fixable position and size mismatch of Section 3b.
 - This comparison was not part of the pre-registered plan and its tests are not in the Holm family below; treat its p-values as exploratory.
 
+**Composite test: MNIST and the writers together (added 2026-11-06, exploratory).** The comparison above scores models on the writers only. Here every model is scored on both domains at once: the 10,000 MNIST test images plus all 5 writers' 1,434 held-out images. *Balanced* weights the two domains equally (the mean of MNIST and stylus accuracy). *Pooled* counts every image, so MNIST is 87% of it. Full table: REGIMES.md §1b.
+
+| Training data | Images | MNIST | Stylus (5 writers) | **Balanced** | Pooled |
+|---|---|---|---|---|---|
+| MNIST subset | 1,712 | 89.4 ± 2.7 | 44.6 ± 4.1 | **67.0 ± 2.7** | 83.8 ± 2.5 |
+| 1 stylus writer (R2) | 1,713 | 34.4 ± 2.4 | 73.2 ± 1.8 | **53.8 ± 1.9** | 39.2 ± 2.3 |
+| 4 stylus writers, size-matched (R3s) | ≈1,712 | 42.6 ± 3.3 | 88.4 ± 0.9 | **65.5 ± 2.1** | 48.4 ± 3.0 |
+| MNIST subset | 6,848 | 96.8 ± 0.2 | 66.1 ± 3.4 | **81.5 ± 1.6** | 93.0 ± 0.4 |
+| 4 stylus writers (R3 k=4) | 6,853 | 45.6 ± 2.7 | 93.5 ± 0.9 | **69.6 ± 1.3** | 51.6 ± 2.3 |
+| All 5 stylus writers (R4) | 8,566 | 48.3 ± 3.3 | 96.1 ± 0.5 | **72.2 ± 1.8** | 54.3 ± 2.9 |
+| All of MNIST (R1) | 60,000 | 98.8 ± 0.2 | 82.9 ± 2.5 | **90.9 ± 1.3** | 96.8 ± 0.4 |
+| MNIST + fine-tune on 3 writers (R5) | 60,000 + 5,140 | 98.5 ± 0.3 | 96.1 ± 0.2 | **97.3 ± 0.2** | 98.2 ± 0.3 |
+
+- **On both domains together, MNIST is the better base at equal size.** Balanced, the 1,712-image MNIST model beats one stylus writer by 13.2 ± 3.5 pp (p = 0.001). At about 6,850 images it beats 4 writers by 11.9 ± 1.9 pp (p < 0.001) and still beats all 5 writers (8,566 images) by 9.2 ± 3.1 pp (p = 0.003).
+- **The one near tie:** 4 size-matched writers come within 1.5 ± 3.2 pp of the same-size MNIST model (p = 0.36). At equal size, writer diversity nearly closes the gap.
+- **Why it flips relative to the writers-only result:** stylus-trained models collapse on MNIST (34–48%), while MNIST-trained models only drop partway on the stylus digits (45–83%). The stylus → MNIST failure is explained in Section 3b.
+- Pooled scores favour MNIST by 35–45 pp, but that mostly reflects the test set's composition, so the balanced score is the one to read.
+- **MNIST pre-training plus fine-tuning (R5) is best on both:** +6.4 ± 1.2 pp balanced over full MNIST (p < 0.001), and +25.1 ± 1.7 pp over training on all 5 writers.
+- For writer-trained models the stylus column includes their own writers' held-out splits, which favours them; MNIST's balanced lead is if anything understated. Exploratory, not in the Holm family.
+
 ![R5 fine-tuning curves](results/regimes/figures/regimes_finetune_curves.png)
 
 ## 3. Stylus → MNIST: does dilation fix the domain gap?
@@ -241,6 +261,17 @@ Adding the fixes cumulatively (position → aspect → slant → width) reaches 
 - Stylus → MNIST: all 14 recipes beat the baseline in all 5 seeds, and 12 of the 13 exploratory ones survive Holm correction (`normboth_rdil`: p (Holm) = 0.056). The best on test, `normboth_rdil_affine` (84.3%), was not the validation pick, so it does not replace the headline. Normalization alone gives +19.6 pp; dilation on top adds another ~4 pp, and affine jitter another ~11.
 - MNIST → stylus: most recipes help by 5–11 pp (two that add test-time dilation gain only +2 to +3), but only the headline is confirmatory; none of the exploratory gains survives Holm with 5 seeds (smallest p (Holm) = 0.079).
 - Per class (stylus → MNIST), the headline recipe fixes the two big failures from Section 3: recall for 7 goes from 1% to 92%, and the share of 9s read as 4 falls from 50% to 11%.
+
+**Why stylus → MNIST is so poor (48%) — the explanation in one place.** Every point below is measured in this study.
+
+1. **Position (the biggest single cause, ≈ +17 pp when fixed).** The committed stylus images are centred by their bounding box; MNIST digits are centred by their centre of mass. Stylus digits sit about twice as far from the true centre (1.48 vs 0.77 px on average). This matters most for digits whose ink is lopsided, like 7, 9 and 4. Centring the stylus training images by centre of mass alone takes MNIST accuracy from 48.1% to 64.6%. In reverse, shifting MNIST test digits the way stylus digits are shifted costs an MNIST-trained model 8.3 pp, the largest single degradation.
+2. **Stroke width (≈ +13 pp when fixed alone).** Stylus strokes are about 1 px wide, MNIST's 2.6 px. A model that has only seen thin lines reads MNIST's thick, ink-heavy digits as 8: the baseline labels **33% of all MNIST images as 8** (the true share is about 10%) and gets **1% of 7s** right. One 3×3 dilation removes the 8 over-prediction (8 falls to 6% of predictions; precision for 8 rises from 32% to 89%). The other ink differences (dimmer ink, more mid-gray pixels) are a side effect of anti-aliased 1-px lines: fixing intensity alone changes nothing.
+3. **Shape and style (smaller).** Stylus digits are narrower (aspect 0.63 vs 0.78) and nearly upright. Stretching them adds about 3–4 pp; matching slant adds about 2 pp once position is fixed and nothing on its own.
+4. **Training data that is too uniform — why the gap is so one-sided.** The stylus set barely varies (stroke width ± 0.1 px, slant ± 9°, every digit scaled to a 20 px box) and comes from 5 writers; MNIST comes from hundreds of writers with much wider variation. Stylus digits mostly fall inside MNIST's range, but MNIST digits fall far outside the stylus range. **At equal training size the asymmetry largely disappears:** 1,712 MNIST images give 44.6% on the stylus digits, and 1,712 images from 4 stylus writers give 42.6% on MNIST (Section RQ4). Most of the "MNIST transfers better" advantage is MNIST's 35× size and diversity.
+5. **How people write 4 (the residual 9 → 4 confusion).** 49% of stylus 4s have a closed top, against 13% of MNIST 4s; closed loops on 9s are equally common in both (82% and 86%). So a stylus-trained model learns "loop + stem = 4" and reads about half of MNIST's 9s as 4. Random affine augmentation in the headline recipe brings this down to 11% (`results/domain_gap/figures/nine_vs_four_examples.png`).
+
+Together: fixing position, aspect, slant and width in order recovers 48% → 72.5%. Normalizing both domains plus dilation plus affine augmentation reaches 82.8%. What remains below MNIST's own 98.8% is mostly the narrowness of the training data — five consistent writers — and their closed-top 4s.
+
 - **Conclusion.** The domain gap is mainly geometric (position and size) plus stroke width, not intensity or slant. Normalizing both domains the way MNIST was built removes most of it, in both directions.
 
 ## 4. Comparison with the team's earlier results

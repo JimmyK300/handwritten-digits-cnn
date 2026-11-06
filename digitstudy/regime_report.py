@@ -74,6 +74,12 @@ def derive(r: dict[str, Any], r1_mnist: dict[int, float]) -> dict[str, Any]:
     d: dict[str, Any] = {"mnist_acc": tests["mnist"]["acc"], "train_acc": r["train_acc"], "n_train": r["n_train"]}
     d["writer_bias"] = max(acc.values()) - min(acc.values())
     d["all_writers_acc"] = float(np.mean(list(acc.values())))
+    # composite test: MNIST test set + all 5 writers' held-out splits
+    n_s = sum(tests[w]["n"] for w in writers)
+    c_s = sum(tests[w]["acc"] * tests[w]["n"] for w in writers)
+    d["stylus_pooled_acc"] = c_s / n_s
+    d["composite_balanced"] = (tests["mnist"]["acc"] + c_s / n_s) / 2
+    d["composite_pooled"] = (c_s + tests["mnist"]["acc"] * tests["mnist"]["n"]) / (n_s + tests["mnist"]["n"])
     if r["regime"] in ("R1", "R1m"):
         seen_acc, seen_loss = tests["mnist"]["acc"], tests["mnist"]["loss"]
         d["seen_acc"] = seen_acc
@@ -165,6 +171,32 @@ def markdown(cfg, runs, agg) -> str:
                  f"{_pct(a['gap_acc'])} | {_pct(a['gap_loss'], 3, 1.0)} | {_pct(a.get('cross_gap'))} | {_pct(a.get('unseen_macro_f1'))} |")
     L += ["", "R1's seen held-out accuracy is MNIST test accuracy and its unseen-writer accuracy covers all 5 writers. "
           "R4 has no unseen writer. R3s caps the total training set at one writer's size (≈1712 images) for every k.", ""]
+
+    # composite
+    comp_groups = ["R1", "R1m n=1712", "R1m n=3424", "R1m n=5136", "R1m n=6848", "R2", "R3s k=4", "R3 k=2", "R3 k=3",
+                   "R3 k=4", "R4", "R5 (1 writer)", "R5 (3 writers)"]
+    if g("R1m n=1712"):
+        L += ["## 1b. Composite test: MNIST test set + all 5 writers (baseline arm; added 2026-11-06, exploratory)", "",
+              "Every model scored on both domains at once: the 10,000 MNIST test images plus the 1,434 held-out images of all 5 "
+              "writers. *Balanced* = mean of MNIST accuracy and pooled stylus accuracy (each domain weighted equally). *Pooled* = "
+              "accuracy over all 11,434 images, so MNIST is 87% of the weight. For writer-trained models the stylus column "
+              "includes their own writers' held-out splits.", "",
+              "| Regime | Train images | MNIST acc | Stylus acc (5 writers) | Balanced | Pooled |", "|---|---|---|---|---|---|"]
+        for grp in comp_groups:
+            a = g(grp)
+            if a and "composite_balanced" in a:
+                L.append(f"| {grp} | {int(round(a['n_train'][0]))} | {_pct(a['mnist_acc'])} | {_pct(a['stylus_pooled_acc'])} | "
+                         f"**{_pct(a['composite_balanced'])}** | {_pct(a['composite_pooled'])} |")
+        L.append("")
+        for lo, hi in (("R2", "R1m n=1712"), ("R3s k=4", "R1m n=1712"), ("R3 k=4", "R1m n=6848"), ("R4", "R1m n=6848"),
+                       ("R4", "R1"), ("R1", "R5 (3 writers)"), ("R4", "R5 (3 writers)")):
+            if g(lo) and g(hi):
+                parts = []
+                for m in ("composite_balanced", "composite_pooled"):
+                    dm, ds, pv = _paired(g(lo)[m][2], g(hi)[m][2])
+                    parts.append(f"{m.split('_')[1]} {dm:+.1f} ± {ds:.1f} pp (p = {pv:.2g})")
+                L.append(f"- {hi} vs {lo}: " + "; ".join(parts) + ".")
+        L.append("")
 
     # diversity
     L += ["## 2. Core hypothesis: writer diversity (baseline arm)", ""]

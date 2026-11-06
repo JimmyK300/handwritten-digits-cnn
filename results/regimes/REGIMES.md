@@ -24,6 +24,34 @@ Generated from `results/regimes/runs.jsonl` (1825 runs) with `configs/regimes.js
 
 R1's seen held-out accuracy is MNIST test accuracy and its unseen-writer accuracy covers all 5 writers. R4 has no unseen writer. R3s caps the total training set at one writer's size (≈1712 images) for every k.
 
+## 1b. Composite test: MNIST test set + all 5 writers (baseline arm; added 2026-11-06, exploratory)
+
+Every model scored on both domains at once: the 10,000 MNIST test images plus the 1,434 held-out images of all 5 writers. *Balanced* = mean of MNIST accuracy and pooled stylus accuracy (each domain weighted equally). *Pooled* = accuracy over all 11,434 images, so MNIST is 87% of the weight. For writer-trained models the stylus column includes their own writers' held-out splits.
+
+| Regime | Train images | MNIST acc | Stylus acc (5 writers) | Balanced | Pooled |
+|---|---|---|---|---|---|
+| R1 | 60000 | 98.8 ± 0.2 | 82.9 ± 2.5 | **90.9 ± 1.3** | 96.8 ± 0.4 |
+| R1m n=1712 | 1712 | 89.4 ± 2.7 | 44.6 ± 4.1 | **67.0 ± 2.7** | 83.8 ± 2.5 |
+| R1m n=3424 | 3424 | 94.1 ± 1.5 | 57.4 ± 3.4 | **75.8 ± 2.2** | 89.5 ± 1.6 |
+| R1m n=5136 | 5136 | 95.5 ± 0.8 | 62.4 ± 6.4 | **79.0 ± 3.4** | 91.3 ± 1.3 |
+| R1m n=6848 | 6848 | 96.8 ± 0.2 | 66.1 ± 3.4 | **81.5 ± 1.6** | 93.0 ± 0.4 |
+| R2 | 1713 | 34.4 ± 2.4 | 73.2 ± 1.8 | **53.8 ± 1.9** | 39.2 ± 2.3 |
+| R3s k=4 | 1712 | 42.6 ± 3.3 | 88.4 ± 0.9 | **65.5 ± 2.1** | 48.4 ± 3.0 |
+| R3 k=2 | 3426 | 41.6 ± 1.2 | 85.1 ± 0.6 | **63.4 ± 0.7** | 47.1 ± 1.1 |
+| R3 k=3 | 5140 | 44.1 ± 1.8 | 90.5 ± 0.5 | **67.3 ± 0.9** | 49.9 ± 1.5 |
+| R3 k=4 | 6853 | 45.6 ± 2.7 | 93.5 ± 0.9 | **69.6 ± 1.3** | 51.6 ± 2.3 |
+| R4 | 8566 | 48.3 ± 3.3 | 96.1 ± 0.5 | **72.2 ± 1.8** | 54.3 ± 2.9 |
+| R5 (1 writer) | 1713 | 98.5 ± 0.3 | 93.6 ± 0.4 | **96.1 ± 0.3** | 97.9 ± 0.3 |
+| R5 (3 writers) | 5140 | 98.5 ± 0.3 | 96.1 ± 0.2 | **97.3 ± 0.2** | 98.2 ± 0.3 |
+
+- R1m n=1712 vs R2: balanced +13.2 ± 3.5 pp (p = 0.0011); pooled +44.6 ± 3.8 pp (p = 1.3e-05).
+- R1m n=1712 vs R3s k=4: balanced +1.5 ± 3.2 pp (p = 0.36); pooled +35.4 ± 3.6 pp (p = 2.6e-05).
+- R1m n=6848 vs R3 k=4: balanced +11.9 ± 1.9 pp (p = 0.00014); pooled +41.3 ± 2.1 pp (p = 1.6e-06).
+- R1m n=6848 vs R4: balanced +9.2 ± 3.1 pp (p = 0.0025); pooled +38.7 ± 3.1 pp (p = 1e-05).
+- R1 vs R4: balanced +18.6 ± 2.7 pp (p = 0.00011); pooled +42.5 ± 3.1 pp (p = 7.1e-06).
+- R5 (3 writers) vs R1: balanced +6.4 ± 1.2 pp (p = 0.00028); pooled +1.3 ± 0.3 pp (p = 0.00053).
+- R5 (3 writers) vs R4: balanced +25.1 ± 1.7 pp (p = 5.6e-06); pooled +43.9 ± 2.8 pp (p = 4.2e-06).
+
 ## 2. Core hypothesis: writer diversity (baseline arm)
 
 | Series | Writers k | Train images | Unseen-writer acc | WriterBias (5 writers) | WriterBias (unseen) | Gap acc (pp) | Cross-writer gap (pp) | MNIST acc |
