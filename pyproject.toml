@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "handwritten-digits-cnn"
 version = "0.1.0"
-description = "Writer-held-out study of morphological dilation for stylus-written digit recognition (NumPy + PyTorch CNNs)."
+description = "Controlled CNN studies on a 10,000-digit stylus dataset: writer diversity, the MNIST <-> stylus domain gap, and morphological dilation (NumPy + PyTorch)."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
@@ -19,3 +19,4 @@ include = ["digitstudy*", "myAPI*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
